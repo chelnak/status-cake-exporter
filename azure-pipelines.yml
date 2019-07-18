@@ -1,0 +1,53 @@
+name: 0.1.$(rev:r)
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - "*"
+
+pr: none
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+  IMAGE_NAME: chelnak/status-cake-exporter
+
+steps:
+
+- task: Docker@1
+  displayName: Build image
+  inputs:
+    command: Build an image
+    imageName: $(IMAGE_NAME)
+    dockerFile: Dockerfile
+    addDefaultLabels: false
+
+- task: Docker@1
+  displayName: Tag image with current build number $(Build.BuildNumber)
+  inputs:
+    command: Tag image
+    imageName: $(IMAGE_NAME)
+    arguments: $(IMAGE_NAME):$(Build.BuildNumber)
+
+- task: Docker@1
+  displayName: Docker Hub login
+  inputs:
+    command: login
+    containerregistrytype: Container Registry
+    dockerRegistryEndpoint: Docker Hub
+
+- task: Docker@1
+  displayName: Push tagged image
+  inputs:
+    command: Push an image
+    imageName: $(IMAGE_NAME):$(Build.BuildNumber)
+
+- task: Docker@1
+  displayName: Push tagged image (latest) if master
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    command: Push an image
+    imageName: '$(IMAGE_NAME):latest'
+
