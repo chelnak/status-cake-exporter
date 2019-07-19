@@ -3,26 +3,43 @@
 import sys
 import logging
 from prometheus_client.core import GaugeMetricFamily
-from status_cake_client import tests
+from status_cake_client import tests as t
 
 logger = logging.getLogger("test_collector")
 
 
 def parse_test_response(r):
-    tests = []
+    t = []
     for i in r.json():
-        tests.append(
+        t.append(
             {
                 "test_id": str(i['TestID']),
                 "test_type": i['TestType'],
                 "test_name": i['WebsiteName'],
                 "test_url": i['WebsiteURL'],
-                "test_status": i['Status'],
-                "test_uptime": str(i['Uptime'])
+                "test_status_int": str(1 if (i["Status"] == "Up") else 0)
             }
         )
 
-    return tests
+    return t
+
+
+def parse_test_details_response(r):
+    t = []
+    for i in r:
+        t.append(
+            {
+                "test_id": str(i['TestID']),
+                "test_status_string": i['Status'],
+                "test_status_int": str(1 if (i["Status"] == "Up") else 0),
+                "test_uptime_percent": str(i['Uptime']),
+                "test_last_tested": i['LastTested'],
+                "test_processing": i['Processing'],
+                "test_down_times": str(i['DownTimes'])
+            }
+        )
+
+    return t
 
 
 class TestCollector(object):
@@ -38,22 +55,44 @@ class TestCollector(object):
 
         try:
 
-            response = tests.get_tests(self.api_key, self.username, self.tags)
+            tests = t.get_tests(self.api_key, self.username, self.tags)
+            parsed_tests = parse_test_response(tests)
 
-            test_results = parse_test_response(response)
+            test_id_list = [i['TestID'] for i in tests.json()]
+            test_details = []
+            for i in test_id_list:
+                test_details.append(
+                    t.get_test_details(self.api_key, self.username, i).json()
+                )
+            parsed_test_details = parse_test_details_response(test_details)
 
-            label_names = test_results[0].keys()
-
-            gauge = GaugeMetricFamily(
-                "status_cake_tests",
+            # status_cake_test_info - gauge
+            label_names = parsed_tests[0].keys()
+            info_gauge = GaugeMetricFamily(
+                "status_cake_test_info",
                 "A basic listing of the tests under the current account.",
                 labels=label_names)
 
-            for i in test_results:
-                status = 1 if (i["test_status"] == "Up") else 0
-                gauge.add_metric(i.values(), status)
+            for i in parsed_tests:
+                info_gauge.add_metric(i.values(), i["test_status_int"])
 
-            yield gauge
+            yield info_gauge
+
+            # status_cake_test_uptime_percent - gauge
+            uptime_label_names = [
+                "test_id"
+            ]
+
+            uptime_gauge = GaugeMetricFamily(
+                "status_cake_test_uptime_percent",
+                "Tests and their uptime percetage",
+                labels=uptime_label_names)
+
+            for i in parsed_test_details:
+                uptime_gauge.add_metric(
+                    [i["test_id"]], i["test_uptime_percent"])
+
+            yield uptime_gauge
 
         except Exception as e:
             logger.error(e)
