@@ -75,9 +75,9 @@ scrape_configs:
 ```
 
 ## Grafana
-Data collected by Prometheus can ne easily surfaced in Grafana.
+Data collected by Prometheus can be easily surfaced in Grafana.
 
-Using the [Statusmap panel](https://grafana.com/grafana/plugins/flant-statusmap-panel) by [flant](https://github.com/flant/grafana-statusmap) you can create a basic status visualization:
+Using the [Statusmap panel](https://grafana.com/grafana/plugins/flant-statusmap-panel) by [flant](https://github.com/flant/grafana-statusmap) you can create a basic status visualization based on uptime percentage:
 
 ![](examples/grafana.png)
 
