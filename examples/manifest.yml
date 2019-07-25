@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: status-cake-exporter
+  labels:
+    app: status-cake-exporter
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+  selector:
+    app: status-cake-exporter
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: status-cake-api-token
+type: generic
+data:
+  USERNAME: [YOUR USERNAME]
+  API_KEY: [YOUR API_KEY]
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: status-cake-exporter
+  labels:
+    app: status-cake-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: status-cake-exporter
+  template:
+    metadata:
+      labels:
+        app: status-cake-exporter
+    spec:
+      containers:
+      - name: status-cake-exporter
+        image: chelnak/status-cake-exporter:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: status-cake-api-token
+              key: USERNAME
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: status-cake-api-token
+              key: API_KEY
