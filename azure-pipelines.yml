@@ -3,7 +3,7 @@ trigger:
   branches:
     include:
       - "*"
-   paths:
+  paths:
     include:
       - exporter/*
       - azure-pipelines.yml
