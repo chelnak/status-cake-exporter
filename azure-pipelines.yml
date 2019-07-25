@@ -22,6 +22,8 @@ steps:
 
 - task: gittools.gitversion-preview.gitversion-task.GitVersion@5
   displayName: GitVersion
+  inputs:
+    configFilePath: GitVersion.yml
 
 - task: Docker@1
   displayName: Build image
