@@ -31,7 +31,7 @@ docker run --env USERNAME --env API_KEY chelnak/status-cake-exporter:latest
 
 ### Kubernetes
 
-Use [examples/manifest.yml](examples/manifest.yml) as an example
+To get up and running quickly, use [examples/manifest.yml](examples/manifest.yml) as an example.
 
 ### Terminal
 
