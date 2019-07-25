@@ -57,6 +57,23 @@ optional arguments:
 | status_cake_test_info | Gauge |A basic listing of the tests under the current account. |
 | status_cake_test_uptime_percent | Gauge | Tests and their uptime percetage |
 
+## Prometheus
+
+Prometheus config needs to be updated in order to see the new exported. Use the following scrape config as an example:
+
+```Yaml
+scrape_configs:
+    - job_name: status-cake-exporter
+    honor_timestamps: true
+    scrape_interval: 10m
+    scrape_timeout: 1m
+    metrics_path: /
+    scheme: http
+    static_configs:
+    - targets:
+        - status-cake-exporter.default.svc:8000
+```
+
 ## Grafana
 Data collected by Prometheus can ne easily surfaced in Grafana.
 
