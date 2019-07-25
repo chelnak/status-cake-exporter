@@ -55,7 +55,7 @@ optional arguments:
 | Name| Type | Description |
 |-----|------|-------------|
 | status_cake_test_info | Gauge |A basic listing of the tests under the current account. |
-| status_cake_test_uptime_percent | Gauge | Tests and their uptime percetage |
+| status_cake_test_uptime_percent | Gauge | Tests and their uptime percentage |
 
 ## Prometheus
 

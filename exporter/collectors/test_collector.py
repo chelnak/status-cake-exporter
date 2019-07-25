@@ -85,7 +85,7 @@ class TestCollector(object):
 
             uptime_gauge = GaugeMetricFamily(
                 "status_cake_test_uptime_percent",
-                "Tests and their uptime percetage",
+                "Tests and their uptime percentage",
                 labels=uptime_label_names)
 
             for i in parsed_test_details:
