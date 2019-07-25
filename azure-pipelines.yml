@@ -1,10 +1,14 @@
-name: 0.1.$(rev:r)
-
 trigger:
   batch: true
   branches:
     include:
       - "*"
+   paths:
+    include:
+      - exporter/*
+      - azure-pipelines.yml
+      - requirements.txt
+      - Dockerfile
 
 pr: none
 
@@ -15,6 +19,9 @@ variables:
   IMAGE_NAME: chelnak/status-cake-exporter
 
 steps:
+
+- task: gittools.gitversion-preview.gitversion-task.GitVersion@5
+  displayName: GitVersion
 
 - task: Docker@1
   displayName: Build image
@@ -51,3 +58,13 @@ steps:
     command: Push an image
     imageName: '$(IMAGE_NAME):latest'
 
+- task: GitHubRelease@0
+  displayName: Create a GitHub GitHubRelease
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  inputs:
+    gitHubConnection: 'chelnak'
+    repositoryName: 'chelnak/status-cake-exporter'
+    action: 'create'
+    target: '$(Build.SourceVersion)'
+    tagSource: 'manual'
+    tag: '$(Build.BuildNumber)'
