@@ -83,5 +83,5 @@ Using the [Statusmap panel](https://grafana.com/grafana/plugins/flant-statusmap-
 
 ### PromQL
 ```PromQL
-(status_cake_test_info + on(test_id) group_right(test_name) (0 * status_cake_test_uptime_percent)) * 100
+status_cake_test_info * on(test_id) group_right(test_name) status_cake_test_uptime_percent
 ```
