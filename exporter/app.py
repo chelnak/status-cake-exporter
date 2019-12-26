@@ -6,9 +6,11 @@ import logging
 from prometheus_client import start_http_server, REGISTRY
 from collectors import test_collector
 from utilities import logs, arguments
+from signal import signal, SIGPIPE, SIG_DFL
 
 if __name__ == "__main__":
 
+    signal(SIGPIPE, SIG_DFL)
     args = arguments.get_args()
 
     logs.configure_logging(args.log_level)
