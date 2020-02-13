@@ -4,13 +4,14 @@ import sys
 import logging
 from prometheus_client.core import GaugeMetricFamily
 from status_cake_client import tests as t
+from status_cake_client import maintenance as m
 
 logger = logging.getLogger("test_collector")
 
 
 def parse_test_response(r):
     t = []
-    for i in r.json():
+    for i in r:
         t.append(
             {
                 "test_id": str(i['TestID']),
@@ -41,7 +42,6 @@ def parse_test_details_response(r):
 
     return t
 
-
 class TestCollector(object):
 
     def __init__(self, username, api_key, tags):
@@ -55,10 +55,14 @@ class TestCollector(object):
 
         try:
 
+            maintenance = m.get_maintenance(self.api_key, self.username)
+            m_test_id_list = [i['all_tests'] for i in maintenance.json()['data']]
+            m_test_id_flat_list = [item for sublist in m_test_id_list for item in sublist]
             tests = t.get_tests(self.api_key, self.username, self.tags)
+            tests = [y for y in tests.json() if str(y['TestID']) not in m_test_id_flat_list]
             parsed_tests = parse_test_response(tests)
 
-            test_id_list = [i['TestID'] for i in tests.json()]
+            test_id_list = [i['TestID'] for i in tests]
             test_details = []
             for i in test_id_list:
                 test_details.append(
