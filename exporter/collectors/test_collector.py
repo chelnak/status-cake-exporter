@@ -4,11 +4,12 @@ import sys
 import logging
 from prometheus_client.core import GaugeMetricFamily
 from status_cake_client import tests as t
+from status_cake_client import maintenance as m
 
 logger = logging.getLogger("test_collector")
 
 
-def parse_test_response(r):
+def parse_test_response(r, m):
     t = []
     for i in r.json():
         t.append(
@@ -17,7 +18,8 @@ def parse_test_response(r):
                 "test_type": i['TestType'],
                 "test_name": i['WebsiteName'],
                 "test_url": i['WebsiteURL'],
-                "test_status_int": str(1 if (i["Status"] == "Up") else 0)
+                "test_status_int": str(1 if (i["Status"] == "Up") else 0),
+                "maintenance_status_int": str(1 if (str(i["TestID"])) in m else 0)
             }
         )
 
@@ -41,7 +43,6 @@ def parse_test_details_response(r):
 
     return t
 
-
 class TestCollector(object):
 
     def __init__(self, username, api_key, tags):
@@ -55,8 +56,13 @@ class TestCollector(object):
 
         try:
 
+            maintenance = m.get_maintenance(self.api_key, self.username)
+            #Grab the test_ids from the response
+            m_test_id_list = [i['all_tests'] for i in maintenance.json()['data']]
+            #Flatten the test_ids into a list
+            m_test_id_flat_list = [item for sublist in m_test_id_list for item in sublist]
             tests = t.get_tests(self.api_key, self.username, self.tags)
-            parsed_tests = parse_test_response(tests)
+            parsed_tests = parse_test_response(tests, m_test_id_flat_list)
 
             test_id_list = [i['TestID'] for i in tests.json()]
             test_details = []
