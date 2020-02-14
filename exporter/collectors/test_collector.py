@@ -9,16 +9,17 @@ from status_cake_client import maintenance as m
 logger = logging.getLogger("test_collector")
 
 
-def parse_test_response(r):
+def parse_test_response(r, m):
     t = []
-    for i in r:
+    for i in r.json():
         t.append(
             {
                 "test_id": str(i['TestID']),
                 "test_type": i['TestType'],
                 "test_name": i['WebsiteName'],
                 "test_url": i['WebsiteURL'],
-                "test_status_int": str(1 if (i["Status"] == "Up") else 0)
+                "test_status_int": str(1 if (i["Status"] == "Up") else 0),
+                "maintenance_status_int": str(1 if (str(i["TestID"])) in m else 0)
             }
         )
 
@@ -56,13 +57,14 @@ class TestCollector(object):
         try:
 
             maintenance = m.get_maintenance(self.api_key, self.username)
+            #Grab the test_ids from the response
             m_test_id_list = [i['all_tests'] for i in maintenance.json()['data']]
+            #Flatten the test_ids into a list
             m_test_id_flat_list = [item for sublist in m_test_id_list for item in sublist]
             tests = t.get_tests(self.api_key, self.username, self.tags)
-            tests = [y for y in tests.json() if str(y['TestID']) not in m_test_id_flat_list]
-            parsed_tests = parse_test_response(tests)
+            parsed_tests = parse_test_response(tests, m_test_id_flat_list)
 
-            test_id_list = [i['TestID'] for i in tests]
+            test_id_list = [i['TestID'] for i in tests.json()]
             test_details = []
             for i in test_id_list:
                 test_details.append(
