@@ -64,7 +64,8 @@ class TestCollector(object):
             tests = t.get_tests(self.api_key, self.username, self.tags)
             parsed_tests = parse_test_response(tests, m_test_id_flat_list)
 
-            test_id_list = [i['TestID'] for i in tests.json()]
+            #Exclude test_ids with active maintenance
+            test_id_list = [i['TestID'] for i in tests.json() if str(i['TestID']) not in m_test_id_flat_list]
             test_details = []
             for i in test_id_list:
                 test_details.append(
