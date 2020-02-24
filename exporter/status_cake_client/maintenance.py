@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
 import logging
+import requests
+import sys
+
 from .base import get
 
 logger = logging.getLogger(__name__)
@@ -12,6 +15,14 @@ def get_maintenance(apikey, username, state="ACT"):
         "state": state
     }
 
-    response = get(apikey, username, endpoint, params)
+    try:
+        response = get(apikey, username, endpoint, params)
+    except requests.exceptions.HTTPError as e:
+        if e.response.status_code == 404:
+            logger.info("Currently no active maintenance")
+            response = e.response
+        else:
+            logger.error(e)
+            sys.exit(1)
 
     return response
