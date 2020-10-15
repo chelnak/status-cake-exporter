@@ -11,7 +11,8 @@ logger = logging.getLogger("test_collector")
 
 def parse_test_response(r, m):
     t = []
-    for i in r.json():
+    tests = r.json()['data']
+    for i in tests:
         t.append(
             {
                 "test_id": str(i['TestID']),
@@ -65,7 +66,7 @@ class TestCollector(object):
             parsed_tests = parse_test_response(tests, m_test_id_flat_list)
 
             #Exclude test_ids with active maintenance
-            test_id_list = [i['TestID'] for i in tests.json() if str(i['TestID']) not in m_test_id_flat_list]
+            test_id_list = [i['test_id'] for i in parsed_tests if str(i['test_id']) not in m_test_id_flat_list]
             test_details = []
             for i in test_id_list:
                 test_details.append(
