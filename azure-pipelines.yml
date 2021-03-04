@@ -20,10 +20,16 @@ variables:
 
 steps:
 
-- task: gittools.gitversion-preview.gitversion-task.GitVersion@5
-  displayName: GitVersion
+- task: gitversion/setup@0
+  displayName: Install GitVersion
   inputs:
-    configFilePath: GitVersion.yml
+    versionSpec: '5.x'
+
+- task: gitversion/execute@0
+  displayName: Use GitVersion
+  inputs:
+    useConfigFile: true
+    configFilePath: 'GitVersion.yml'
 
 - task: Docker@1
   displayName: Build image
