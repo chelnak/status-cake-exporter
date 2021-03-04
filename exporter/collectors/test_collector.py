@@ -20,6 +20,7 @@ def parse_test_response(r, m):
                 "test_name": i['WebsiteName'],
                 "test_url": i['WebsiteURL'],
                 "test_status_int": str(1 if (i["Status"] == "Up") else 0),
+                "test_uptime_percent": str(i['Uptime']),
                 "maintenance_status_int": str(1 if (str(i["TestID"])) in m else 0)
             }
         )
@@ -65,15 +66,6 @@ class TestCollector(object):
             tests = t.get_tests(self.api_key, self.username, self.tags)
             parsed_tests = parse_test_response(tests, m_test_id_flat_list)
 
-            #Exclude test_ids with active maintenance
-            test_id_list = [i['test_id'] for i in parsed_tests if str(i['test_id']) not in m_test_id_flat_list]
-            test_details = []
-            for i in test_id_list:
-                test_details.append(
-                    t.get_test_details(self.api_key, self.username, i).json()
-                )
-            parsed_test_details = parse_test_details_response(test_details)
-
             # status_cake_test_info - gauge
             label_names = parsed_tests[0].keys()
             info_gauge = GaugeMetricFamily(
@@ -96,7 +88,7 @@ class TestCollector(object):
                 "Tests and their uptime percentage",
                 labels=uptime_label_names)
 
-            for i in parsed_test_details:
+            for i in parsed_tests:
                 uptime_gauge.add_metric(
                     [i["test_id"]], i["test_uptime_percent"])
 
