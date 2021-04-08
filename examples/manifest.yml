@@ -54,3 +54,16 @@ spec:
             secretKeyRef:
               name: status-cake-api-token
               key: API_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: status-cake-exporter
+  labels:
+    app: status-cake-exporter
+spec:
+  ports:
+  - port: 8000
+    protocol: TCP
+  selector:
+    app: status-cake-exporter

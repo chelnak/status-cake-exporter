@@ -11,8 +11,8 @@ def get_tests(apikey, username, tags=""):
     params = {
         "tags": tags
     }
-
     response = get(apikey, username, endpoint, params)
+    logger.debug(f"Request response:\n{response.content}")
 
     return response
 
@@ -24,5 +24,6 @@ def get_test_details(apikey, username, test_id):
     }
 
     response = get(apikey, username, endpoint, params)
+    logger.debug(f"Request response:\n{response.content}")
 
     return response

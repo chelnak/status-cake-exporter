@@ -9,7 +9,6 @@ from prometheus_client import start_http_server, REGISTRY
 from collectors import test_collector
 from utilities import logs, arguments
 
-
 if __name__ == "__main__":
 
     try:
@@ -19,10 +18,10 @@ if __name__ == "__main__":
         logs.configure_logging(args.log_level)
         logger = logging.getLogger(__name__)
 
-        logger.info("Starting web server")
-        start_http_server(8000)
+        logger.info(f"Starting web server on port: {args.port}")
+        start_http_server(args.port)
 
-        logger.info("Registering collectors")
+        logger.info("Registering collectors.")
         REGISTRY.register(test_collector.TestCollector(
             args.username, args.api_key, args.tags))
 

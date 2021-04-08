@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-tests
+data:
+  run.sh: |-
+      for i in $(seq 1 48) ; do
+        wget -T 10 http://{{ .Release.Name }}:{{ .Values.service.port }}/metrics && exit 0
+        sleep 5
+      done
+
+      exit 1

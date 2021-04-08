@@ -30,6 +30,12 @@ def get_args():
                choices={'debug', 'info', 'warn', 'error'},
                help="Set a log level for the application")
 
+    parser.add("--port",
+               dest="port",
+               env_var="PORT",
+               default=8000,
+               help="The TCP port to start the web server on")
+
     args = parser.parse_args()
 
     if args.username is None:
