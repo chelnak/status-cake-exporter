@@ -51,8 +51,14 @@ jobs:
 
         if [[ "${{ github.ref }}" == "refs/tags/v"* ]]; then
           docker tag $IMAGE_NAME $IMAGE_ID:$(echo $VERSION | sed -e 's/^v//')
+
+          # latest should always reflect the most recent tagged release
           VERSION=latest
+        elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          # main represents the latest build from main branch
+          VERSION=main
         else
+          # dev represents the latest build from prs or branches
           VERSION=dev
         fi
 
