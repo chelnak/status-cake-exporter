@@ -1,0 +1,52 @@
+---
+apiVersion: {{ template "deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}"
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    app: "{{ .Release.Name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}"
+    spec:
+      containers:
+      - name: status-cake-exporter
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+        - name: USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-api-token
+              key: USERNAME
+        - name: API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-api-token
+              key: API_KEY
+{{- if .Values.statuscake.tags }}
+        - name: TAGS
+          value: {{ .Values.statuscake.tags }}
+{{- end }}
+{{- if .Values.statuscake.logLevel }}
+        - name: LOG_LEVEL
+          value: {{ .Values.statuscake.logLevel }}
+{{- end }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+{{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+{{- range .Values.image.pullSecrets }}
+      - name: {{ . }}
+{{- end }}
+{{- end }}

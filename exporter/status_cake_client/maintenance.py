@@ -19,10 +19,11 @@ def get_maintenance(apikey, username, state="ACT"):
         response = get(apikey, username, endpoint, params)
     except requests.exceptions.HTTPError as e:
         if e.response.status_code == 404:
-            logger.info("Currently no active maintenance")
+            logger.info("Currently no active maintenance.")
             response = e.response
         else:
             logger.error(e)
             sys.exit(1)
 
+    logger.debug(f"Request response:\n{response.content}")
     return response

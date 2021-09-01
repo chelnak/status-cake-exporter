@@ -1,0 +1,9 @@
+apiVersion: v1
+appVersion: latest
+description: Status Cake Prometheus Exporter
+keywords:
+- prometheus
+- statuscake
+maintainers: []
+name: status-cake-exporter
+version: 1.0.0

@@ -1,0 +1,26 @@
+image:
+  repository: chelnak/status-cake-exporter
+  tag: latest
+  # A list of ImagePullSecrets to use for the containers in this Chart
+  pullSecrets: []
+
+statuscake:
+  # REQUIRED: username to use when connecting to statuscake
+  username: ""
+  # REQUIRED: apikey to use when connecting to statuscake
+  apiKey: ""
+  # optional: a comma separated list of tags to filter for
+  # tags:
+  # optional: debug, info, warn, error
+  # logLevel:
+
+service:
+  port: 8000
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+  limits:
+    cpu: "250m"
+    memory: "256Mi"
