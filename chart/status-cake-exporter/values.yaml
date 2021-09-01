@@ -1,5 +1,5 @@
 image:
-  repository: chelnak/status-cake-exporter
+  repository: ghcr.io/chelnak/status-cake-exporter
   tag: latest
   # A list of ImagePullSecrets to use for the containers in this Chart
   pullSecrets: []
