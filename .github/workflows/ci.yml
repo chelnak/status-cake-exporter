@@ -49,7 +49,7 @@ jobs:
         IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
         VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
-        if [ "${{ github.ref }}" == "refs/tags/v"* ]]; then
+        if [[ "${{ github.ref }}" == "refs/tags/v"* ]]; then
           docker tag $IMAGE_NAME $IMAGE_ID:$(echo $VERSION | sed -e 's/^v//')
           VERSION=latest
         else
@@ -57,7 +57,7 @@ jobs:
         fi
 
         docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-        docker push -a $IMAGE_ID:$VERSION
+        docker push -a $IMAGE_ID
       env:
         GITVERSION_MAJORMINORPATCH: ${{ steps.gitversion.outputs.majorMinorPatch }}    
 
