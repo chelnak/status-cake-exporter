@@ -1,6 +1,8 @@
-[![Build Status](https://craigg.visualstudio.com/Pipelines/_apis/build/status/status-cake-exporter?branchName=master)](https://craigg.visualstudio.com/Pipelines/_build/latest?definitionId=19&branchName=master)
-
 # Status Cake Exporter
+
+![status-cake-exporter](https://github.com/chelnak/status-cake-exporter/actions/workflows/ci.yml/badge.svg)
+
+> :rotating_light: Container images have moved to ghcr.io/chelnak/status-cake-exporter
 
 Status Cake Exporter is a Prometheus exporter for [StatusCake](https://www.statuscake.com/).
 
@@ -92,7 +94,7 @@ Data collected by Prometheus can be easily surfaced in Grafana.
 
 Using the [Statusmap panel](https://grafana.com/grafana/plugins/flant-statusmap-panel) by [flant](https://github.com/flant/grafana-statusmap) you can create a basic status visualization based on uptime percentage:
 
-![](examples/grafana.png)
+![grafan](examples/grafana.png)
 
 ### PromQL
 

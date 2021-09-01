@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
       - name: status-cake-exporter
-        image: chelnak/status-cake-exporter:latest
+        image: ghcr.io/chelnak/status-cake-exporter:latest
         ports:
         - containerPort: 8000
         env:
