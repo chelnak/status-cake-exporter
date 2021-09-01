@@ -1,0 +1,75 @@
+name: status-cake-exporter
+
+on:
+  push:
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: status-cake-exporter
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0    
+      
+    - name: Set up Python 🐍
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Lint 🍻
+      run: | 
+        python -m flake8 exporter/ --max-line-length=120 --tee
+
+    # - name: Test ✅
+    #   run: |
+    #     python setup.py test
+
+    - name: Build image
+      run: docker build . --file Dockerfile --tag status-cake-exporter"
+
+    - name: Log into registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Push image
+      run: |
+        IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+        IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+        VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+        if [ "${{ github.ref }}" == "refs/tags/v"* ]]; then
+          docker tag $IMAGE_NAME $IMAGE_ID:(echo $VERSION | sed -e 's/^v//'))
+          VERSION=latest
+        else
+          VERSION=dev
+        fi
+
+        docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+        docker push -a $IMAGE_ID:$VERSION
+      env:
+        GITVERSION_MAJORMINORPATCH: ${{ steps.gitversion.outputs.majorMinorPatch }}    
+
+    - name: Build Changelog 📝
+      if: ${{ github.ref == 'refs/heads/main' }}
+      id: build_changelog
+      uses: mikepenz/release-changelog-builder-action@v1
+      with:
+        configuration: "changelog.json"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create Release 🚀
+      if: ${{ github.ref == 'refs/heads/main' }}
+      id: create_release
+      uses: ncipollo/release-action@v1
+      with:
+        name: status-cake-exporter
+        body: ${{steps.build_changelog.outputs.changelog}}
+        token: ${{ secrets.GITHUB_TOKEN }}
