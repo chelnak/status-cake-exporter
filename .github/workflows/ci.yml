@@ -37,13 +37,13 @@ jobs:
     #   run: |
     #     python setup.py test
 
-    - name: Build image
+    - name: Build image 🐳
       run: docker build . --file Dockerfile --tag status-cake-exporter
 
-    - name: Log into registry
+    - name: Log into registry 🐳
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-    - name: Push image
+    - name: Push image 🐳
       run: |
         IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
         IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
