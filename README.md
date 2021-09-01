@@ -1,6 +1,6 @@
-[![Build Status](https://craigg.visualstudio.com/Pipelines/_apis/build/status/status-cake-exporter?branchName=master)](https://craigg.visualstudio.com/Pipelines/_build/latest?definitionId=19&branchName=master)
-
 # Status Cake Exporter
+
+![status-cake-exporter](https://github.com/chelnak/status-cake-exporter/actions/workflows/ci.yml/badge.svg)
 
 Status Cake Exporter is a Prometheus exporter for [StatusCake](https://www.statuscake.com/).
 
