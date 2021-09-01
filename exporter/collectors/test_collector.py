@@ -8,6 +8,7 @@ from status_cake_client import maintenance as m
 
 logger = logging.getLogger("test_collector")
 
+
 def parse_test_response(r, m):
     t = []
     try:
@@ -48,6 +49,7 @@ def parse_test_details_response(r):
         )
 
     return t
+
 
 class TestCollector(object):
 
