@@ -2,6 +2,8 @@
 
 ![status-cake-exporter](https://github.com/chelnak/status-cake-exporter/actions/workflows/ci.yml/badge.svg)
 
+> :rotating_light: Container images have moved to ghcr.io/chelnak/status-cake-exporter
+
 Status Cake Exporter is a Prometheus exporter for [StatusCake](https://www.statuscake.com/).
 
 Metrics are exposed on port 8000 when using the provided examples/manifest.yml](examples/manifest.yml) in Kubernetes, e.g.
