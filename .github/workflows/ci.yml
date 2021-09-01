@@ -38,7 +38,7 @@ jobs:
     #     python setup.py test
 
     - name: Build image
-      run: docker build . --file Dockerfile --tag status-cake-exporter"
+      run: docker build . --file Dockerfile --tag status-cake-exporter
 
     - name: Log into registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
