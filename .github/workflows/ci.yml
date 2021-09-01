@@ -50,7 +50,7 @@ jobs:
         VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
         if [ "${{ github.ref }}" == "refs/tags/v"* ]]; then
-          docker tag $IMAGE_NAME $IMAGE_ID:(echo $VERSION | sed -e 's/^v//'))
+          docker tag $IMAGE_NAME $IMAGE_ID:$(echo $VERSION | sed -e 's/^v//')
           VERSION=latest
         else
           VERSION=dev
