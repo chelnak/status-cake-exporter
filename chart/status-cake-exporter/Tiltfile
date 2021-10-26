@@ -1,7 +1,7 @@
 docker_build('status-cake-exporter:dev', '../../')
 # If not using a standard local dev name, specify your k8s context here
 #allow_k8s_contexts('microk8s')
-k8s_yaml(helm('.', values='values.yaml', set=['statuscake.logLevel=debug', 'image.repository=status-cake-exporter', 'image.tag=dev', 'statuscake.username=', 'statuscake.apiKey=', 'statuscake.tags=firstTag,secondTag']))
+k8s_yaml(helm('.', values='values.yaml', set=['statuscake.logLevel=debug', 'image.repository=status-cake-exporter', 'image.tag=dev', 'statuscake.useV1UptimeEndpoints=', 'statuscake.useV1MaintenanceWindowsEndpoints=', 'statuscake.username=', 'statuscake.apiKey=', 'statuscake.tags=firstTag,secondTag']))
 watch_file('.')
 watch_file('../../Dockerfile')
 watch_file('../../exporter')

@@ -7,6 +7,22 @@ import configargparse
 def get_args():
 
     parser = configargparse.ArgParser()
+    parser.add("--use_v1_uptime_endpoints",
+            dest="use_v1_uptime_endpoints",
+            env_var="USE_V1_UPTIME_ENDPOINTS",
+            default="false",
+            type=str.lower,
+            choices={'false', 'f', '0', 'off', 'no', 'n', 'off', 'true', 't', '1', 'on', 'yes', 'y', 't', 'true', 'on'},
+            help='Boolean format string for using the uptime endpoints of the v1 API: https://www.statuscake.com/api/v1/#operation/list-uptime-tests')
+
+    parser.add("--use_v1_maintenance_windows_endpoints",
+               dest="use_v1_maintenance_windows_endpoints",
+               env_var="USE_V1_MAINTENANCE_WINDOWS_ENDPOINTS",
+               default="false",
+               type=str.lower,
+               choices={'false', 'f', '0', 'off', 'no', 'n', 'off', 'true', 't', '1', 'on', 'yes', 'y', 't', 'true', 'on'},
+               help='Boolean format string for using the maintenance windows endpoints of the v1 API: https://www.statuscake.com/api/v1/#operation/list-maintenance-windows')
+
     parser.add("--username",
                dest="username",
                env_var="USERNAME",
@@ -44,7 +60,7 @@ def get_args():
         sys.exit(1)
 
     if args.api_key is None:
-        print("Required argument --username is missing")
+        print("Required argument --api_key is missing")
         print(parser.print_help())
         sys.exit(1)
 

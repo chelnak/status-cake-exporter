@@ -22,13 +22,15 @@ http://status-cake-exporter.default.svc:8000
 
 ## Usage
 
-| Setting  | Required | Default |
-|----------|----------|---------|
-| USERNAME | Yes      | Null    |
-| API_KEY  | Yes      | Null    |
-| TAGS     | No       | Null    |
-| LOG_LEVEL| No       | info    |
-| PORT     | No       | 8000    |
+| Setting                              | Required | Default |
+|--------------------------------------|----------|---------|
+| USE_V1_UPTIME_ENDPOINTS              | No       | False   | 
+| USE_V1_MAINTENANCE_WINDOWS_ENDPOINTS | No       | False   | 
+| USERNAME                             | Yes      | Null    | 
+| API_KEY                              | Yes      | Null    |
+| TAGS                                 | No       | Null    |
+| LOG_LEVEL                            | No       | info    | 
+| PORT                                 | No       | 8000    |
 
 ### Docker
 
@@ -57,12 +59,26 @@ override environment variables which override defaults.
 
 optional arguments:
   -h, --help            show this help message and exit
+  --use_v1_uptime_endpoints true                Boolean for using v1 uptime endpoints [env var: USE_V1_UPTIME_ENDPOINTS]
+  --use_v1_maintenance_windows_endpoints true   Boolean for using v1 maintenance windows endpoints [env var: USE_V1_MAINTENANCE_WINDOWS_ENDPOINTS]
   --username USERNAME   Username for the account [env var: USERNAME]
   --api-key API_KEY     API key for the account [env var: API_KEY]
   --tests.tags TAGS     A comma separated list of tags used to filter tests returned from the api [env var: TAGS]
   --logging.level       {debug,info,warn,error} Set a log level for the application [env var: LOG_LEVEL]
   --port                The TCP port to start the web server on [env var: PORT]
 ```
+
+## V1 API
+StatusCake have a new v1 API with documentation available at https://www.statuscake.com/api/v1/, deprecating the legacy API https://www.statuscake.com/api/.
+
+The new `Get all uptime tests` endpoint https://www.statuscake.com/api/v1/#operation/list-uptime-tests provides paged responses to get all tests, overcoming the limit of only 100 tests in the response from the legacy API https://www.statuscake.com/api/Tests/Get%20All%20Tests.md
+
+Environment variables `USE_V1_UPTIME_ENDPOINTS` and `USE_V1_MAINTENANCE_WINDOWS_ENDPOINTS` are used to enable use of the v1 API.
+
+### Maintenance Windows endpoints
+Endpoints of the new v1 API are available to be used by all accounts with the exception of the maintenance windows endpoints, from https://www.statuscake.com/api/v1/#tag/uptime:
+>NOTE: the API endpoints concerned with maintenance windows will only work with accounts registed to use the newer version of maintenance windows. This version of maintenance windows is incompatible with the original version and all existing windows will require migrating to be further used. Presently a tool to automate the migration of maintenance windows is under development.
+Similarly, if an account is registered to use the newer version of maintenance windows, the legacy API's maintenance windows endpoints cannot be used.
 
 ## Metrics
 
@@ -94,7 +110,7 @@ Data collected by Prometheus can be easily surfaced in Grafana.
 
 Using the [Statusmap panel](https://grafana.com/grafana/plugins/flant-statusmap-panel) by [flant](https://github.com/flant/grafana-statusmap) you can create a basic status visualization based on uptime percentage:
 
-![grafan](examples/grafana.png)
+![grafana](examples/grafana.png)
 
 ### PromQL
 
