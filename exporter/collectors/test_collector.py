@@ -47,6 +47,7 @@ def parse_test_response(use_v1_uptime_endpoints, tests, m_test_id_flat_list):
         logger.error(f"Test data was:\n{tests}")
         sys.exit(1)
 
+
 class TestCollector(object):
 
     def __init__(self, use_v1_uptime_endpoints, use_v1_maintenance_windows_endpoints, username, api_key, tags):

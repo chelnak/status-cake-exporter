@@ -13,13 +13,13 @@ def get_maintenance(use_v1_maintenance_windows_endpoints, apikey, username):
     if use_v1_maintenance_windows_endpoints:
         endpoint = "maintenance-windows"
         params = {
-        "state": "active"
-    }
+            "state": "active"
+        }
     else:
         endpoint = "Maintenance"
         params = {
-        "state": "ACT"
-    }
+            "state": "ACT"
+        }
 
     try:
         response = get(use_v1_maintenance_windows_endpoints, apikey, username, endpoint, params)
