@@ -24,6 +24,14 @@ spec:
         ports:
         - containerPort: {{ .Values.service.port }}
         env:
+{{- if .Values.statuscake.useV1UptimeEndpoints }}
+        - name: USE_V1_UPTIME_ENDPOINTS
+          value: {{ .Values.statuscake.useV1UptimeEndpoints }}
+{{- end }}
+{{- if .Values.statuscake.useV1MaintenanceWindowsEndpoints }}
+        - name: USE_V1_MAINTENANCE_WINDOWS_ENDPOINTS
+          value: {{ .Values.statuscake.useV1MaintenanceWindowsEndpoints }}
+{{- end }}
         - name: USERNAME
           valueFrom:
             secretKeyRef:

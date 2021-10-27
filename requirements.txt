@@ -1,5 +1,4 @@
 prometheus-client==0.7.1
 requests==2.22.0
 ConfigArgParse==0.14.0
-
-
+setuptools==58.3.0

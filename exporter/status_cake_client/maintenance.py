@@ -9,16 +9,22 @@ from .base import get
 logger = logging.getLogger(__name__)
 
 
-def get_maintenance(apikey, username, state="ACT"):
-    endpoint = "Maintenance"
-    params = {
-        "state": state
-    }
+def get_maintenance(use_v1_maintenance_windows_endpoints, apikey, username):
+    if use_v1_maintenance_windows_endpoints:
+        endpoint = "maintenance-windows"
+        params = {
+            "state": "active"
+        }
+    else:
+        endpoint = "Maintenance"
+        params = {
+            "state": "ACT"
+        }
 
     try:
-        response = get(apikey, username, endpoint, params)
+        response = get(use_v1_maintenance_windows_endpoints, apikey, username, endpoint, params)
     except requests.exceptions.HTTPError as e:
-        if e.response.status_code == 404:
+        if not(use_v1_maintenance_windows_endpoints) and e.response.status_code == 404:
             logger.info("Currently no active maintenance.")
             response = e.response
         else:

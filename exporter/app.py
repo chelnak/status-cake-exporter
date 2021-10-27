@@ -23,7 +23,11 @@ if __name__ == "__main__":
 
         logger.info("Registering collectors.")
         REGISTRY.register(test_collector.TestCollector(
-            args.username, args.api_key, args.tags))
+            args.use_v1_uptime_endpoints,
+            args.use_v1_maintenance_windows_endpoints,
+            args.username,
+            args.api_key,
+            args.tags))
 
         while True:
             time.sleep(1)

@@ -6,24 +6,28 @@ from .base import get
 logger = logging.getLogger(__name__)
 
 
-def get_tests(apikey, username, tags=""):
-    endpoint = "Tests"
-    params = {
-        "tags": tags
-    }
-    response = get(apikey, username, endpoint, params)
+def get_tests(use_v1_uptime_endpoints, apikey, username, tags=""):
+    if use_v1_uptime_endpoints:
+        page = 1
+        endpoint = "uptime"
+        params = {
+            "tags": tags,
+            "page": page
+        }
+        response = get(use_v1_uptime_endpoints, apikey, username, endpoint, params)
+        tests = response.json()['data']
+        while (page < (response.json()['metadata']['page_count'])):
+            page += 1
+            params["page"] = page
+            response = get(use_v1_uptime_endpoints, apikey, username, endpoint, params)
+            tests += response.json()['data']
+    else:
+        endpoint = "Tests"
+        params = {
+            "tags": tags
+        }
+        response = get(use_v1_uptime_endpoints, apikey, username, endpoint, params)
+        tests = response.json()['data']
     logger.debug(f"Request response:\n{response.content}")
 
-    return response
-
-
-def get_test_details(apikey, username, test_id):
-    endpoint = "Tests/Details/"
-    params = {
-        "TestID": test_id
-    }
-
-    response = get(apikey, username, endpoint, params)
-    logger.debug(f"Request response:\n{response.content}")
-
-    return response
+    return tests
