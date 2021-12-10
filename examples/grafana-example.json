@@ -1,0 +1,169 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [
+            "blackbox",
+            "prometheus"
+          ],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "gnetId": 14928,
+  "graphTooltip": 0,
+  "id": 68,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "cards": {
+        "cardHSpacing": 2,
+        "cardMinWidth": 10,
+        "cardRound": null,
+        "cardVSpacing": 2
+      },
+      "color": {
+        "cardColor": "#b4ff00",
+        "colorScale": "sqrt",
+        "colorScheme": "interpolateGnYlRd",
+        "defaultColor": "#757575",
+        "exponent": 0.5,
+        "max": 100,
+        "min": 0,
+        "mode": "spectrum",
+        "thresholds": [
+          {
+            "$$hashKey": "object:152",
+            "color": "#37872D",
+            "tooltip": "online",
+            "value": ""
+          },
+          {
+            "$$hashKey": "object:156",
+            "color": "#C4162A",
+            "tooltip": "offline",
+            "value": "0"
+          }
+        ]
+      },
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 22,
+        "x": 0,
+        "y": 0
+      },
+      "highlightCards": true,
+      "id": 30,
+      "legend": {
+        "show": false
+      },
+      "links": [],
+      "nullPointMode": "as empty",
+      "pageSize": 15,
+      "pluginVersion": "8.1.0",
+      "seriesFilterIndex": -1,
+      "statusmap": {
+        "ConfigVersion": "v1"
+      },
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "status_cake_test_info * on(test_id) group_right(test_name) status_cake_test_uptime_percent",
+          "format": "time_series",
+          "interval": "$__interval",
+          "legendFormat": "{{test_name}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Statuscake Statuspage",
+      "tooltip": {
+        "extraInfo": "",
+        "freezeOnClick": true,
+        "items": [],
+        "show": true,
+        "showExtraInfo": false,
+        "showItems": false
+      },
+      "type": "flant-statusmap-panel",
+      "useMax": true,
+      "usingPagination": false,
+      "xAxis": {
+        "show": true
+      },
+      "yAxis": {
+        "maxWidth": -1,
+        "minWidth": -1,
+        "show": true
+      },
+      "yAxisSort": "metrics",
+      "yLabel": {
+        "delimiter": "",
+        "labelTemplate": "",
+        "usingSplitLabel": false
+      }
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 32,
+  "style": "dark",
+  "tags": [
+    "statuscake",
+    "monitoring",
+    "external"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "Statuscake",
+  "uid": "0aDkW227z",
+  "version": 6
+}
