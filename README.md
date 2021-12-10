@@ -48,6 +48,10 @@ To get up and running quickly, use [examples/manifest.yml](examples/manifest.yml
 
 Otherwise, you can use the Helm Chart provided in [chart/status-cake-exporter](chart/status-cake-exporter/README.md).
 
+### Grafana
+
+To get up and running quickly, use [examples/grafana-example.json](examples/grafana-example.json) as an example. 
+
 ### Terminal
 
 ```sh
