@@ -26,11 +26,11 @@ spec:
         env:
 {{- if .Values.statuscake.useV1UptimeEndpoints }}
         - name: USE_V1_UPTIME_ENDPOINTS
-          value: {{ .Values.statuscake.useV1UptimeEndpoints }}
+          value: {{ .Values.statuscake.useV1UptimeEndpoints | quote }}
 {{- end }}
 {{- if .Values.statuscake.useV1MaintenanceWindowsEndpoints }}
         - name: USE_V1_MAINTENANCE_WINDOWS_ENDPOINTS
-          value: {{ .Values.statuscake.useV1MaintenanceWindowsEndpoints }}
+          value: {{ .Values.statuscake.useV1MaintenanceWindowsEndpoints | quote }}
 {{- end }}
         - name: USERNAME
           valueFrom:
