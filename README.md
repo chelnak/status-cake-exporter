@@ -39,7 +39,7 @@ The following will expose the exporter at `localhost:8000`:
 ```sh
 export USERNAME=statuscakeuser
 export API_KEY=xxxxxxxx
-docker run -d -p 8000:8000 --env USERNAME --env API_KEY chelnak/status-cake-exporter:latest
+docker run -d -p 8000:8000 --env USERNAME --env API_KEY ghcr.io/chelnak/status-cake-exporter:latest
 ```
 
 ### Kubernetes
