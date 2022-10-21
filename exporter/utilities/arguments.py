@@ -25,6 +25,12 @@ def get_args():
                         'true', 't', '1', 'on', 'yes', 'y', 't', 'true', 'on'},
                help='Boolean format string for using the maintenance windows endpoints of the v1 API')
 
+    parser.add("--timeout",
+               dest="timeout",
+               env_var="TIMEOUT",
+               default=0,
+               help='Timeout in seconds for each paginated calls')
+
     parser.add("--username",
                dest="username",
                env_var="USERNAME",

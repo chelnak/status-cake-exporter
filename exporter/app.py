@@ -12,7 +12,6 @@ from utilities import logs, arguments
 if __name__ == "__main__":
 
     try:
-
         args = arguments.get_args()
 
         logs.configure_logging(args.log_level)
@@ -25,6 +24,7 @@ if __name__ == "__main__":
         REGISTRY.register(test_collector.TestCollector(
             args.use_v1_uptime_endpoints,
             args.use_v1_maintenance_windows_endpoints,
+            args.timeout,
             args.username,
             args.api_key,
             args.tags))

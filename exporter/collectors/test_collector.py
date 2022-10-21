@@ -2,6 +2,7 @@
 
 import sys
 import logging
+import time
 from prometheus_client.core import GaugeMetricFamily
 from setuptools import distutils
 from status_cake_client import tests as t
@@ -50,27 +51,29 @@ def parse_test_response(use_v1_uptime_endpoints, tests, m_test_id_flat_list):
 
 class TestCollector(object):
 
-    def __init__(self, use_v1_uptime_endpoints, use_v1_maintenance_windows_endpoints, username, api_key, tags):
+    def __init__(self, use_v1_uptime_endpoints, use_v1_maintenance_windows_endpoints, timeout, username, api_key, tags):
         self.use_v1_uptime_endpoints = bool(distutils.util.strtobool(use_v1_uptime_endpoints))
         self.use_v1_maintenance_windows_endpoints = bool(distutils.util.strtobool(use_v1_maintenance_windows_endpoints))
+        self.timeout = timeout
         self.username = username
         self.api_key = api_key
         self.tags = tags
 
     def collect(self):
-
+        start_time = time.time()
         logger.info("Collector started.")
 
         try:
-
             maintenance = m.get_maintenance(self.use_v1_maintenance_windows_endpoints, self.api_key, self.username)
             try:
-                maintenance_data = maintenance.json()['data']
+                maintenance_data = []
+                if maintenance != "" and maintenance is not None:
+                    maintenance_data = maintenance.json()['data']
+                logger.info(f"Maintenance response:\n{maintenance_data}")
             except Exception as e:
                 logger.error(f"Could not parse maintenace data, exception: {e}")
                 logger.error(f"Data was:\n{maintenance}")
-                sys.exit(1)
-            logger.debug(f"Maintenance response:\n{maintenance_data}")
+                ##sys.exit(1)
 
             # Grab the test_ids from the response
             if self.use_v1_maintenance_windows_endpoints:
@@ -82,7 +85,7 @@ class TestCollector(object):
             m_test_id_flat_list = [item for sublist in m_test_id_list for item in sublist]
             logger.info(f"Found {len(m_test_id_flat_list)} tests that are in maintenance.")
 
-            tests = t.get_tests(self.use_v1_uptime_endpoints, self.api_key, self.username, self.tags)
+            tests = t.get_tests(self.use_v1_uptime_endpoints, int(self.timeout), self.api_key, self.username, self.tags)
             parsed_tests = parse_test_response(self.use_v1_uptime_endpoints, tests, m_test_id_flat_list)
             logger.info(f"Publishing {len(parsed_tests)} tests.")
 
@@ -119,3 +122,6 @@ class TestCollector(object):
             sys.exit(1)
 
         logger.info("Collector finished.")
+        logger.info("Total Running time = {:.3f} seconds".format(time.time() - start_time))
+        logger.info("Sleeping till next service invocation............")
+        logger.info("")

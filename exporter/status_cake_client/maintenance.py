@@ -24,12 +24,12 @@ def get_maintenance(use_v1_maintenance_windows_endpoints, apikey, username):
     try:
         response = get(use_v1_maintenance_windows_endpoints, apikey, username, endpoint, params)
     except requests.exceptions.HTTPError as e:
-        if not(use_v1_maintenance_windows_endpoints) and e.response.status_code == 404:
+        if not(use_v1_maintenance_windows_endpoints) and (e.response.status_code == 404 or e.response.status_code == 402):
             logger.info("Currently no active maintenance.")
             response = e.response
         else:
             logger.error(e)
             sys.exit(1)
 
-    logger.debug(f"Request response:\n{response.content}")
+    logger.info(f"Request response from maintenance:\n{response.content}")
     return response
