@@ -1,12 +1,8 @@
-FROM python:3.7.4-alpine3.10
+FROM python:3.10-alpine
 
-ADD exporter exporter/
-ADD requirements.txt exporter/requirements.txt
-
-WORKDIR exporter
-
-RUN pip install -r requirements.txt
+COPY dist/ /tmp/
+RUN pip install --no-cache-dir /tmp/status_cake_exporter*.whl
 
 EXPOSE 8000
 
-CMD ["python", "app.py"]
+ENTRYPOINT ["status-cake-exporter"]
