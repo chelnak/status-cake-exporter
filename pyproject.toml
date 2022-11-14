@@ -4,17 +4,16 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "status-cake-exporter"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Craig Gumbley <craiggumbley@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "status_cake_exporter"}]
 
-[tool.mypy]
-[[tool.mypy.overrides]]
-module = [ "textual.*", "pyfiglet.*", "textual_inputs.*", "fast_autocomplete.*", "validators.*",]
-ignore_missing_imports = true
+[tool.pyright]
+include = ["status_cake_exporter"]
+reportMissingImports = false
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -22,10 +21,11 @@ prometheus-client = "0.15.0"
 statuscake-py = "^1.0.1b1"
 typer = "^0.7.0"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+flake8 = "^5.0.4"
 black = "^22.10.0"
 pre-commit = "^2.20.0"
-mypy = "^0.990"
+pyright = "^1.1.279"
 isort = "^5.10.1"
 darglint = "^1.8.1"
 
