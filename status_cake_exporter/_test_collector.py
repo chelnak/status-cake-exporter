@@ -3,6 +3,7 @@
 import logging
 
 from prometheus_client.core import GaugeMetricFamily
+from prometheus_client.registry import Collector
 
 from ._status_cake import StatusCake
 
@@ -33,7 +34,7 @@ def transform(
         return t if len(t) > 0 else []
 
 
-class TestCollector(object):
+class TestCollector(Collector):
     def __init__(self, username: str, api_key: str, tags: str):
         self.username: str = username
         self.api_key: str = api_key
@@ -65,11 +66,11 @@ class TestCollector(object):
             info_gauge = GaugeMetricFamily(
                 "status_cake_test_info",
                 "A basic listing of the tests under the current account.",
-                labels=metrics[0].keys(),
+                labels=list(metrics[0].keys()),
             )
 
             for i in metrics:
-                info_gauge.add_metric(i.values(), i["test_status_int"])
+                info_gauge.add_metric(list(i.values()), float(i["test_status_int"]))
 
             yield info_gauge
 
@@ -82,7 +83,8 @@ class TestCollector(object):
             )
 
             for i in metrics:
-                uptime_gauge.add_metric([i["test_id"]], i["test_uptime_percent"])
+                uptime_gauge.add_metric([i["test_id"]], float(i["test_uptime_percent"]))
+
             yield uptime_gauge
 
             logger.info("Collector finished.")
