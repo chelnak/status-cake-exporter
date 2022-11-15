@@ -18,6 +18,21 @@ def get_test_maintenance_status(id: str, tests_in_maintenance: list[str]) -> str
     return "1" if id in tests_in_maintenance else "0"
 
 
+def get_tests_in_maintenance(maintenance_windows: list[dict[str, str]]) -> list[str]:
+    t: list[str] = []
+
+    # Return early if there are no maintenance windows otherwise we get an index out of range error
+    if len(maintenance_windows) == 0:
+        return t
+
+    # Handle the possibility of no maintenance windows coming from the legacy api
+    key = "tests" if maintenance_windows[0].get("tests") else "all_tests"
+    for i in maintenance_windows:
+        t.extend(i[key])
+
+    return list(set(t)) if len(t) > 0 else []
+
+
 def transform(
     tests: list[dict[str, str]], tests_in_maintenance: list[str]
 ) -> list[dict[str, str]] | None:
@@ -64,16 +79,16 @@ class TestCollector(Collector):
             logger.debug("Fetching maintenance windows")
             maintenance = statuscake.list_maintenance_windows()
 
-            tests_in_maintenance = [i["id"] for i in maintenance]
+            tests_in_maintenance = get_tests_in_maintenance(maintenance)
             logger.info(
                 f"Found {len(tests_in_maintenance)} tests that are in maintenance."
             )
 
             logger.debug("Fetching uptime tests")
-            tests = statuscake.list_tests()
+            tests = statuscake.list_tests(self.tags)
 
             metrics = transform(tests, tests_in_maintenance)
-            if metrics is None:
+            if len(metrics) == 0:
                 logger.info("There are no test metrics to publish.")
                 return
 
@@ -103,8 +118,9 @@ class TestCollector(Collector):
 
             yield uptime_gauge
 
-            logger.info("Collector finished.")
-
         except Exception as e:
             # This should stop the expoter from crashing if there is an error.
             logger.fatal(f"A fatal error occurred: {e}")
+
+        finally:
+            logger.info("Collector finished.")
