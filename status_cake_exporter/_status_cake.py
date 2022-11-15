@@ -8,6 +8,12 @@ from statuscake.apis import MaintenanceWindowsApi, UptimeApi
 from statuscake.exceptions import ApiValueError, ForbiddenException
 from typing_extensions import NotRequired, TypedDict
 
+from ._status_cake_legacy import (
+    NotFoundException,
+    PaymentRequiredException,
+    StatusCakeLegacyApiClient,
+)
+
 logger = logging.getLogger("status_cake")
 
 
@@ -29,6 +35,28 @@ class StatusCake:
             header_name="Authorization",
             header_value=f"Bearer {self.api_key}",
         )
+
+    def __get_legacy_api_client(self) -> StatusCakeLegacyApiClient:
+        return StatusCakeLegacyApiClient(
+            self.username,
+            self.api_key,
+        )
+
+    def __list_legacy_mainenance_windows(self) -> list[dict[str, Any]]:
+        api_client = self.__get_legacy_api_client()
+
+        try:
+            response: list[dict[str, Any]] = api_client.list_maintenance_windows()
+            return response
+        except PaymentRequiredException:
+            logger.warn(
+                "Your current plan has no access to this feature. Skipping maintenance window check."
+            )
+            return []
+
+        except NotFoundException:
+            logger.debug("No maintenance windows recieved.")
+            return []
 
     def list_maintenance_windows(self) -> list[dict[str, Any]]:
         api_client = self.__get_api_client()
