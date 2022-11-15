@@ -55,16 +55,20 @@ To get up and running quickly, use [examples/grafana-example.json](examples/graf
 Usage: status-cake-exporter [OPTIONS]
 
 Options:
-  --username TEXT   Username for the account. This is only required for legacy
-                    accounts.  [env var: USERNAME]
-  --api-key TEXT    API Key for the account.  [env var: API_KEY; required]
-  --tags TEXT       A comma separated list of tags used to filter tests
-                    returned from the api  [env var: TAGS]
-  --log-level TEXT  The log level of the application. Value can be one of
-                    {debug, info, warn, error}  [env var: LOG_LEVEL; default:
-                    info]
-  --port INTEGER    [env var: PORT; default: 8000]
-  --help            Show this message and exit.
+  --username TEXT        Username for the account. This is only required for
+                         legacy accounts.  [env var: USERNAME]
+  --api-key TEXT         API Key for the account.  [env var: API_KEY;
+                         required]
+  --tags TEXT            A comma separated list of tags used to filter tests
+                         returned from the api  [env var: TAGS]
+  --log-level TEXT       The log level of the application. Value can be one of
+                         {debug, info, warn, error}  [env var: LOG_LEVEL;
+                         default: info]
+  --port INTEGER         [env var: PORT; default: 8000]
+  --items-per-page TEXT  The number of items that the api will return on a
+                         page. This is a global option.  [env var:
+                         ITEMS_PER_PAGE; default: 25]
+  --help                 Show this message and exit
 ```
 
 ## Metrics
