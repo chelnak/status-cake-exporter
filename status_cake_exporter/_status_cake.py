@@ -17,10 +17,20 @@ from ._status_cake_legacy import (
 logger = logging.getLogger("status_cake")
 
 
-# This keeps type checking happy
-class ListUptimeTestParameters(TypedDict):
+# The default set of parameters used for pagination
+class DefaultPaginationParameters(TypedDict):
     page: int
     limit: int
+
+
+# A generic type that is used as a hint for pagination args
+# Consumers would inherit this type and add their own api parameters
+class PaginationParameters(TypedDict):
+    pass
+
+
+# Parameters expected by the StatusCake API uptime endpoint
+class ListUptimeTestParameters(PaginationParameters):
     tags: NotRequired[str]
 
 
@@ -58,6 +68,29 @@ class StatusCake:
             logger.debug("No maintenance windows recieved.")
             return []
 
+    def __paginate_response(
+        self, func: Any, args: PaginationParameters | None
+    ) -> list[dict[str, Any]]:
+        params: DefaultPaginationParameters = {"page": 1, "limit": self.per_page}
+        args = args | params if args else params
+
+        response = func(**params)
+        metadata = response["metadata"]
+        logger.debug(
+            f"Received {metadata['total_count']} tests across {metadata['page_count']} page(s)"
+        )
+
+        data = response["data"]
+        while params["page"] < metadata["page_count"]:
+            params["page"] += 1
+            logger.debug(f"Fetching page {params['page']} of {metadata['page_count']}")
+            paged_response = func(**params)
+            data.extend(paged_response["data"])
+
+            sleep(1)
+
+        return data
+
     def list_maintenance_windows(self) -> list[dict[str, Any]]:
         api_client = self.__get_api_client()
 
@@ -66,27 +99,11 @@ class StatusCake:
                 api_client
             )
 
-            page = 1
-            response = maintenance_window_api.list_maintenance_windows(
-                page=page, limit=self.per_page
+            response = self.__paginate_response(
+                maintenance_window_api.list_maintenance_windows,
+                None,
             )
-            metadata = response["metadata"]
-            logger.debug(
-                f"Received {metadata['total_count']} tests across {metadata['page_count']} page(s)"
-            )
-
-            windows = response["data"]
-            while page < metadata["page_count"]:
-                page += 1
-                logger.debug(f"Fetching page {page} of {metadata['page_count']}")
-                paged_response = maintenance_window_api.list_maintenance_windows(
-                    page=page, limit=self.per_page
-                )
-                windows.extend(paged_response["data"])
-
-                sleep(1)
-
-            return windows
+            return response
 
         # TODO: Handle pre v1 maintenance api accounts gracefully
         # We should attempt to hit the v1 API first, and if that fails, fall back to the legacy API
@@ -112,31 +129,12 @@ class StatusCake:
 
         try:
             uptime_api: UptimeApi = UptimeApi(api_client)
-
-            params: ListUptimeTestParameters = {"page": 1, "limit": self.per_page}
-            if tags:
-                params["tags"] = tags
-
-            logger.debug(f"params: {params}")
-            response = uptime_api.list_uptime_tests(**params)
-
-            metadata = response["metadata"]
-            logger.debug(
-                f"Received {metadata['total_count']} tests across {metadata['page_count']} page(s)"
+            params = ListUptimeTestParameters(tags=tags) if tags else None
+            response = self.__paginate_response(
+                uptime_api.list_uptime_tests,
+                params,
             )
-
-            tests = response["data"]
-            while params["page"] < metadata["page_count"]:
-                params["page"] += 1
-                logger.debug(
-                    f"Fetching page {params['page']} of {metadata['page_count']}"
-                )
-                paged_response = uptime_api.list_uptime_tests(**params)
-                tests.extend(paged_response["data"])
-
-                sleep(1)  # respect the API rate limit
-
-            return tests
+            return response
 
         # https://github.com/StatusCakeDev/statuscake-py/issues/8
         except ApiValueError as e:
