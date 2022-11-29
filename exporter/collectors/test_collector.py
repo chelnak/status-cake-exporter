@@ -69,7 +69,7 @@ class TestCollector(object):
                 maintenance_data = []
                 if maintenance != "" and maintenance is not None:
                     maintenance_data = maintenance.json()['data']
-                logger.info(f"Maintenance response:\n{maintenance_data}")
+                logger.debug(f"Maintenance response:\n{maintenance_data}")
             except Exception as e:
                 logger.error(f"Could not parse maintenace data, exception: {e}")
                 logger.error(f"Data was:\n{maintenance}")

@@ -31,5 +31,5 @@ def get_maintenance(use_v1_maintenance_windows_endpoints, apikey, username):
             logger.error(e)
             sys.exit(1)
 
-    logger.info(f"Request response from maintenance:\n{response.content}")
+    logger.debug(f"Request response from maintenance:\n{response.content}")
     return response

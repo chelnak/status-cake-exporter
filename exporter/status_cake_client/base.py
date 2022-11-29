@@ -24,7 +24,7 @@ def get(use_v1_api, apikey, username, endpoint, params={}):
 
     request_url = f"{BASE_URL}{endpoint}"
 
-    logger.info(f"Starting request: {request_url} {endpoint} {params}")
+    logger.debug(f"Starting request: {request_url} {endpoint} {params}")
     response = None
 
     try:

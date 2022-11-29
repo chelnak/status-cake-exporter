@@ -20,7 +20,7 @@ def get_tests(use_v1_uptime_endpoints, timeout, apikey, username, tags=""):
         if response is not None:
             tests = response.json()['data']
         time.sleep(timeout)
-        logger.info("Total page count " + str(response.json()['metadata']['page_count']))
+        logger.debug("Total page count " + str(response.json()['metadata']['page_count']))
         while (page < (response.json()['metadata']['page_count'])):
             page += 1
             params["page"] = page
