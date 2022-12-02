@@ -1,0 +1,39 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "status-cake-exporter"
+version = "0.2.0"
+description = ""
+authors = ["Craig Gumbley <craiggumbley@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "status_cake_exporter"}]
+
+[tool.pyright]
+include = ["status_cake_exporter"]
+reportMissingImports = false
+
+[tool.isort]
+profile = "black"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+prometheus-client = "0.15.0"
+statuscake-py = "^1.0.1b1"
+typer = "^0.7.0"
+requests = "^2.28.1"
+types-requests = "^2.28.11.4"
+typing-extensions = "^4.4.0"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^5.0.4"
+black = "^22.10.0"
+pre-commit = "^2.20.0"
+pyright = "^1.1.279"
+isort = "^5.10.1"
+darglint = "^1.8.1"
+
+[tool.poetry.scripts]
+status-cake-exporter = "status_cake_exporter.app:run"
