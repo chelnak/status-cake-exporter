@@ -168,8 +168,11 @@ class TestCollector(Collector):
             yield uptime_gauge
 
         except Exception as e:
+            import traceback
+
             # This should stop the expoter from crashing if there is an error.
             logger.fatal(f"A fatal error occurred: {e}")
+            logger.debug(traceback.format_exc())
 
         finally:
             logger.info("Collector finished.")

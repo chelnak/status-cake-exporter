@@ -117,15 +117,19 @@ class StatusCake:
             return response
 
         except ForbiddenException as e:
-            message = json.loads(e.body)["message"]
-            if "Your current plan has no access to this feature" in message:
-                logger.warn(
-                    (
-                        "Your current plan has no access to this feature or your account is "
-                        "using legacy maintenance windows. Skipping maintenance window check."
+            if e.body:
+                message = json.loads(e.body)["message"]
+                if (
+                    message
+                    and "Your current plan has no access to this feature" in message
+                ):
+                    logger.warn(
+                        (
+                            "Your current plan has no access to this feature or your account is "
+                            "using legacy maintenance windows. Skipping maintenance window check."
+                        )
                     )
-                )
-                return []
+                    return []
 
             # re-raise here because it might be genuine.
             raise e
