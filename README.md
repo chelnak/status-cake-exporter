@@ -23,7 +23,6 @@ http://status-cake-exporter.default.svc:8000
 
 | Setting                              | Required | Default |
 |--------------------------------------|----------|---------|
-| USERNAME                             | Yes      | Null    | 
 | API_KEY                              | Yes      | Null    |
 | TAGS                                 | No       | Null    |
 | LOG_LEVEL                            | No       | info    | 
@@ -34,14 +33,13 @@ http://status-cake-exporter.default.svc:8000
 The following will expose the exporter at `localhost:8000`:
 
 ```sh
-export USERNAME=statuscakeuser
 export API_KEY=xxxxxxxx
-docker run -d -p 8000:8000 --env USERNAME --env API_KEY ghcr.io/chelnak/status-cake-exporter:latest
+docker run -d -p 8000:8000 --env API_KEY ghcr.io/chelnak/status-cake-exporter:latest
 ```
 
 ### Kubernetes
 
-To get up and running quickly, use [examples/manifest.yml](examples/manifest.yml) as an example. You will need to create a secret named `status-cake-api-token` containing your `USERNAME` and `API_KEY` first.
+To get up and running quickly, use [examples/manifest.yml](examples/manifest.yml) as an example. You will need to create a secret named `status-cake-api-token` containing your `API_KEY` first.
 
 Otherwise, you can use the Helm Chart provided in [chart/status-cake-exporter](chart/status-cake-exporter/README.md).
 
@@ -55,8 +53,6 @@ To get up and running quickly, use [examples/grafana-example.json](examples/graf
 Usage: status-cake-exporter [OPTIONS]
 
 Options:
-  --username TEXT        Username for the account. This is only required for
-                         legacy accounts.  [env var: USERNAME]
   --api-key TEXT         API Key for the account.  [env var: API_KEY;
                          required]
   --tags TEXT            A comma separated list of tags used to filter tests
