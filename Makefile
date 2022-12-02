@@ -18,7 +18,7 @@ check:
 	@poetry run black --check .
 	@poetry run isort --check .
 	@poetry run flake8 status_cake_exporter --max-line-length=120 --tee
-	@poetry run darglint -m "{path}:{line} -> {msg_id}: {msg}" status_cake_exporteri
+	@poetry run darglint -s google -m "{path}:{line} -> {msg_id}: {msg}" status_cake_exporteri
 
 
 # Developing

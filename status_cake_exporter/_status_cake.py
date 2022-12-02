@@ -8,69 +8,70 @@ from statuscake.apis import MaintenanceWindowsApi, UptimeApi
 from statuscake.exceptions import ApiValueError, ForbiddenException
 from typing_extensions import NotRequired, TypedDict
 
-from ._status_cake_legacy import (
-    NotFoundException,
-    PaymentRequiredException,
-    StatusCakeLegacyApiClient,
-)
-
 logger = logging.getLogger("status_cake")
 
 
-# The default set of parameters used for pagination
 class DefaultPaginationParameters(TypedDict):
+    """The default set of parameters used for pagination"""
+
     page: int
     limit: int
 
 
-# A generic type that is used as a hint for pagination args
-# Consumers would inherit this type and add their own api parameters
 class PaginationParameters(TypedDict):
+    """
+    A generic type that is used as a hint for pagination args
+    Consumers would inherit this type and add their own api parameters
+    """
+
     pass
 
 
-# Parameters expected by the StatusCake API uptime endpoint
 class ListUptimeTestParameters(PaginationParameters):
+    """Parameters expected by the StatusCake API uptime endpoint"""
+
     tags: NotRequired[str]
 
 
 class StatusCake:
-    def __init__(self, username: str, api_key: str, per_page: int) -> None:
-        self.username: str = username
+    """
+    A wrapper class for the StatusCake API client.
+    """
+
+    def __init__(self, api_key: str, per_page: int) -> None:
+        """
+        Args:
+            api_key: [str] The StatusCake API key
+            per_page: [int] The number of results to return per page
+        """
         self.api_key: str = api_key
         self.per_page: int = int(per_page)
 
     def __get_api_client(self) -> ApiClient:
+        """
+        Returns an instance of the StatusCake API client
+
+        Returns:
+            ApiClient
+        """
         return ApiClient(
             header_name="Authorization",
             header_value=f"Bearer {self.api_key}",
         )
 
-    def __get_legacy_api_client(self) -> StatusCakeLegacyApiClient:
-        return StatusCakeLegacyApiClient(
-            self.username,
-            self.api_key,
-        )
-
-    def __list_legacy_mainenance_windows(self) -> list[dict[str, Any]]:
-        api_client = self.__get_legacy_api_client()
-
-        try:
-            response: list[dict[str, Any]] = api_client.list_maintenance_windows()
-            return response
-        except PaymentRequiredException:
-            logger.warn(
-                "Your current plan has no access to this feature. Skipping maintenance window check."
-            )
-            return []
-
-        except NotFoundException:
-            logger.debug("No maintenance windows recieved.")
-            return []
-
     def __paginate_response(
         self, func: Any, args: PaginationParameters | None
     ) -> list[dict[str, Any]]:
+        """
+        A helper function that will paginate through the response of a given function.
+
+        Args:
+            func: [Any] The function to call
+            args: [PaginationParameters | None] The arguments to pass to the function
+
+        Returns:
+            list[dict[str, Any]]
+        """
         params: DefaultPaginationParameters = {"page": 1, "limit": self.per_page}
         args = args | params if args else params
 
@@ -92,6 +93,16 @@ class StatusCake:
         return data
 
     def list_maintenance_windows(self) -> list[dict[str, Any]]:
+        """
+        Returns a list of maintenance windows
+
+        Returns:
+            list[dict[str, Any]]
+
+        Raises:
+            Exception: If an error occurs while fetching the maintenance windows
+            ForbiddenException: If the API key does not have the required permissions
+        """
         api_client = self.__get_api_client()
 
         try:
@@ -105,15 +116,14 @@ class StatusCake:
             )
             return response
 
-        # TODO: Handle pre v1 maintenance api accounts gracefully
-        # We should attempt to hit the v1 API first, and if that fails, fall back to the legacy API
-        # but what exception should we catch here?
-
         except ForbiddenException as e:
             message = json.loads(e.body)["message"]
             if "Your current plan has no access to this feature" in message:
                 logger.warn(
-                    "Your current plan has no access to this feature. Skipping maintenance window check."
+                    (
+                        "Your current plan has no access to this feature or your account is "
+                        "using legacy maintenance windows. Skipping maintenance window check."
+                    )
                 )
                 return []
 
@@ -125,6 +135,19 @@ class StatusCake:
             raise e
 
     def list_tests(self, tags: str = "") -> list[dict]:
+        """
+        Returns a list of tests
+
+        Args:
+            tags: [str] A comma separated list of tags to filter by.
+
+        Returns:
+            list[dict[str, Any]]
+
+        Raises:
+            Exception: If an error occurs while fetching the tests
+            ApiValueError: If the tags parameter is invalid
+        """
         api_client = self.__get_api_client()
 
         try:

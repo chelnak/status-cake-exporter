@@ -15,7 +15,7 @@ logger = logging.getLogger("exporter")
 def exporter(
     username: str = typer.Option(
         "",
-        help="Username for the account. This is only required for legacy accounts.",
+        help="Username for the account. This is only required for legacy accounts. (DEPRECATED)",
         envvar="USERNAME",
     ),
     api_key: str = typer.Option(..., help="API Key for the account.", envvar="API_KEY"),
@@ -36,15 +36,31 @@ def exporter(
         envvar="ITEMS_PER_PAGE",
     ),
 ):
+    """
+    The entry point for the exporter. This will start the exporter and begin collecting metrics.
+
+    Args:
+        username: The username for the account. This is only required for legacy accounts.
+        api_key: The api key for the account.
+        tags: A comma separated list of tags used to filter tests returned from the api.
+        log_level: The log level of the application. Value can be one of {debug, info, warn, error}.
+        port: The port that the exporter will listen on.
+        items_per_page: The number of items that the api will return on a page. This is a global option.
+    """
 
     try:
         configure_logging(log_level)
+
+        if username:
+            logger.warning(
+                "The username option is deprecated and will be removed in a future release."
+            )
 
         logger.info(f"Starting web server on port: {port}")
         start_http_server(port)
 
         logger.info("Registering collectors.")
-        test_collector = TestCollector(username, api_key, items_per_page, tags)
+        test_collector = TestCollector(api_key, items_per_page, tags)
         REGISTRY.register(test_collector)
 
         while True:

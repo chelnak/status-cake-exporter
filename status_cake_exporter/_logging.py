@@ -3,6 +3,15 @@ import sys
 
 
 def configure_logging(log_level: str) -> None:
+    """
+    Configure the logging for the application.
+
+    Args:
+        log_level: The log level of the application. Value can be one of {debug, info, warn, error}.
+
+    Raises:
+        ValueError: If the log level is not one of the expected values.
+    """
     root_logger = logging.getLogger()
 
     log_levels = {
