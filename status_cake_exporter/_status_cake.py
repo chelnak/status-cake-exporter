@@ -102,6 +102,7 @@ class StatusCake:
         Raises:
             Exception: If an error occurs while fetching the maintenance windows
             ForbiddenException: If the API key does not have the required permissions
+            ApiValueError: If the API receives an invalid value
         """
         api_client = self.__get_api_client()
 
@@ -132,6 +133,13 @@ class StatusCake:
                     return []
 
             # re-raise here because it might be genuine.
+            raise e
+
+        except ApiValueError as e:
+            if "Invalid value for `total_count`" in str(e):
+                logger.debug(f"No maintenance windows were found: {e}.")
+                return []
+
             raise e
 
         except Exception as e:
