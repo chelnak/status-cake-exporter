@@ -103,13 +103,15 @@ def transform(
 class TestCollector(Collector):
     """The collector subclass responsible for gathering test metrics from the StatusCake API."""
 
-    def __init__(self, api_key: str, per_page: int, tags: str):
+    def __init__(self, host: str, api_key: str, per_page: int, tags: str):
         """
         Args:
+            host: [str] The host of the StatusCake API
             api_key: [str] The StatusCake API key
             per_page: [int] The number of tests to return per page
             tags: [str] The tags to filter the tests by
         """
+        self.host: str = host
         self.api_key: str = api_key
         self.per_page: int = per_page
         self.tags: str = tags
@@ -121,7 +123,7 @@ class TestCollector(Collector):
         Yields:
             [Generator] The generator that yields the metrics to the Prometheus client.
         """
-        statuscake = StatusCake(self.api_key, self.per_page)
+        statuscake = StatusCake(self.host, self.api_key, self.per_page)
 
         logger.info("Collector started.")
 

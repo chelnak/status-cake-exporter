@@ -3,7 +3,7 @@ import logging
 from time import sleep
 from typing import Any
 
-from statuscake import ApiClient
+from statuscake import ApiClient, Configuration
 from statuscake.apis import MaintenanceWindowsApi, UptimeApi
 from statuscake.exceptions import ApiValueError, ForbiddenException
 from typing_extensions import NotRequired, TypedDict
@@ -44,12 +44,14 @@ class StatusCake:
     A wrapper class for the StatusCake API client.
     """
 
-    def __init__(self, api_key: str, per_page: int) -> None:
+    def __init__(self, host: str, api_key: str, per_page: int) -> None:
         """
         Args:
+            host: [str] The host of the StatusCake API
             api_key: [str] The StatusCake API key
             per_page: [int] The number of results to return per page
         """
+        self.host: str = host
         self.api_key: str = api_key
         self.per_page: int = int(per_page)
 
@@ -61,6 +63,7 @@ class StatusCake:
             ApiClient
         """
         return ApiClient(
+            Configuration(host=self.host),
             header_name="Authorization",
             header_value=f"Bearer {self.api_key}",
         )

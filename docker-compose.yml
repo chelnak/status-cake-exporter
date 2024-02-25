@@ -1,0 +1,18 @@
+services:
+  exporter:
+    build: .
+    environment:
+      - HOST=http://prism:4010
+      - API_KEY=123
+      - LOG_LEVEL=debug
+    ports:
+      - "8000:8000"
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+  prism:
+    image: stoplight/prism:4
+    command: 'mock -h 0.0.0.0 https://developers.statuscake.com/redocusaurus/plugin-redoc-0.yaml'
+    ports:
+      - '8080:4010'  

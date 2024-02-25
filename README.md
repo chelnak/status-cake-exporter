@@ -21,12 +21,14 @@ http://status-cake-exporter.default.svc:8000
 
 ## Usage
 
-| Setting                              | Required | Default |
-|--------------------------------------|----------|---------|
-| API_KEY                              | Yes      | Null    |
-| TAGS                                 | No       | Null    |
-| LOG_LEVEL                            | No       | info    | 
-| PORT                                 | No       | 8000    |
+| Setting                              | Required | Default                       |
+|--------------------------------------|----------|---------                      |
+| HOST                                 | No       | https://api.statuscake.com/v1 |
+| API_KEY                              | Yes      | Null                          |
+| TAGS                                 | No       | Null                          |
+| LOG_LEVEL                            | No       | info                          |
+| PORT                                 | No       | 8000                          |
+| ITEMS_PER_PAGE                       | No       | 25                            |
 
 ### Docker
 
@@ -45,7 +47,7 @@ Otherwise, you can use the Helm Chart provided in [chart/status-cake-exporter](c
 
 ### Grafana
 
-To get up and running quickly, use [examples/grafana-example.json](examples/grafana-example.json) as an example. 
+To get up and running quickly, use [examples/grafana-example.json](examples/grafana-example.json) as an example.
 
 ### Terminal
 
@@ -53,6 +55,8 @@ To get up and running quickly, use [examples/grafana-example.json](examples/graf
 Usage: status-cake-exporter [OPTIONS]
 
 Options:
+  --host TEXT            The host of the statuscake api.  [env var: HOST;
+                         default: https://api.statuscake.com/v1]
   --api-key TEXT         API Key for the account.  [env var: API_KEY;
                          required]
   --tags TEXT            A comma separated list of tags used to filter tests
@@ -73,6 +77,7 @@ Options:
 |-----|------|-------------|
 | status_cake_test_info | Gauge |A basic listing of the tests under the current account. |
 | status_cake_test_uptime_percent | Gauge | Tests and their uptime percentage |
+| status_cake_test_performance | Gauge | Tests and their performance percentage |
 
 ## Prometheus
 
@@ -107,6 +112,8 @@ status_cake_test_info * on(test_id) group_right(test_name) status_cake_test_upti
 
 ## Development
 
+### Tilt
+
 This repository uses [Tilt](https://tilt.dev) for rapid development on Kubernetes.
 
 To use this, run:
@@ -119,3 +126,13 @@ tilt up
 Tilt will reload your environment when it detects changes to your code.
 
 Note: You will need to provide valid credentials for StatusCake in your `Tiltfile` for this to work.
+
+### Docker compose
+
+You can use the provided `docker-compose.yml` to run the exporter locally.
+
+```sh
+docker-compose watch
+```
+
+This will start the exporter along with a mocked statuscake api server.
