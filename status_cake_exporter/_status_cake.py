@@ -3,7 +3,7 @@ import logging
 from time import sleep
 from typing import Any
 
-from statuscake import ApiClient
+from statuscake import ApiClient, Configuration
 from statuscake.apis import MaintenanceWindowsApi, UptimeApi
 from statuscake.exceptions import ApiValueError, ForbiddenException
 from typing_extensions import NotRequired, TypedDict
@@ -33,17 +33,25 @@ class ListUptimeTestParameters(PaginationParameters):
     tags: NotRequired[str]
 
 
+class ListUptimeTestHistoryParameters(PaginationParameters):
+    """Parameters expected by the StatusCake API uptime history endpoint"""
+
+    limit: NotRequired[int]
+
+
 class StatusCake:
     """
     A wrapper class for the StatusCake API client.
     """
 
-    def __init__(self, api_key: str, per_page: int) -> None:
+    def __init__(self, host: str, api_key: str, per_page: int) -> None:
         """
         Args:
+            host: [str] The host of the StatusCake API
             api_key: [str] The StatusCake API key
             per_page: [int] The number of results to return per page
         """
+        self.host: str = host
         self.api_key: str = api_key
         self.per_page: int = int(per_page)
 
@@ -55,6 +63,7 @@ class StatusCake:
             ApiClient
         """
         return ApiClient(
+            Configuration(host=self.host),
             header_name="Authorization",
             header_value=f"Bearer {self.api_key}",
         )
@@ -102,6 +111,7 @@ class StatusCake:
         Raises:
             Exception: If an error occurs while fetching the maintenance windows
             ForbiddenException: If the API key does not have the required permissions
+            ApiValueError: If the API receives an invalid value
         """
         api_client = self.__get_api_client()
 
@@ -134,6 +144,13 @@ class StatusCake:
             # re-raise here because it might be genuine.
             raise e
 
+        except ApiValueError as e:
+            if "Invalid value for `total_count`" in str(e):
+                logger.debug(f"No maintenance windows were found: {e}.")
+                return []
+
+            raise e
+
         except Exception as e:
             logger.error(f"Error while fetching maintenance windows: {e}")
             raise e
@@ -161,6 +178,13 @@ class StatusCake:
                 uptime_api.list_uptime_tests,
                 params,
             )
+
+            # Fetch the performance of each test and add it to the response
+            for test in response:
+                history = self.get_test_history(test["id"])
+                test["performance"] = history["data"][0]["performance"]
+
+            print(response)
             return response
 
         # https://github.com/StatusCakeDev/statuscake-py/issues/8
@@ -173,4 +197,29 @@ class StatusCake:
 
         except Exception as e:
             logger.error(f"Error while fetching tests: {e}")
+            raise e
+
+    def get_test_history(self, test_id: str) -> list[dict[str, Any]]:
+        """
+        Returns the history of a test
+
+        Args:
+            test_id: [str] The ID of the test
+
+        Returns:
+            list[dict[str, Any]]
+
+        Raises:
+            Exception: If an error occurs while fetching the test history
+        """
+        api_client = self.__get_api_client()
+
+        try:
+            uptime_api: UptimeApi = UptimeApi(api_client)
+            params = ListUptimeTestHistoryParameters(limit=1)
+            response = uptime_api.list_uptime_test_history(test_id, **params)
+            return response
+
+        except Exception as e:
+            logger.error(f"Error while fetching test history: {e}")
             raise e

@@ -1,0 +1,10 @@
+.github/
+.vscode/
+chart/
+examples/
+.gitignore
+.editorconfig
+.precommit-config.yaml
+CHANGELOG.md
+LICENSE
+Makefile

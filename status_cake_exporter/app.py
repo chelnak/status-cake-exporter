@@ -13,6 +13,11 @@ logger = logging.getLogger("exporter")
 
 
 def exporter(
+    host=typer.Option(
+        "https://api.statuscake.com/v1",
+        help="The host of the StatusCake API.",
+        envvar="HOST",
+    ),
     api_key: str = typer.Option(..., help="API Key for the account.", envvar="API_KEY"),
     tags: str = typer.Option(
         "",
@@ -49,7 +54,7 @@ def exporter(
         start_http_server(port)
 
         logger.info("Registering collectors.")
-        test_collector = TestCollector(api_key, items_per_page, tags)
+        test_collector = TestCollector(host, api_key, items_per_page, tags)
         REGISTRY.register(test_collector)
 
         while True:
