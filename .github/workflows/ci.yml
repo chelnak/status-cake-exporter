@@ -35,11 +35,6 @@ jobs:
     - name: "install dependencies"
       run: poetry install
 
-    - name: "build"
-      run: |
-        source $VENV
-        make build
-
     - name: "get version"
       id: "get_version"
       run: |
