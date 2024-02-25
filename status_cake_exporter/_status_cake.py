@@ -33,6 +33,12 @@ class ListUptimeTestParameters(PaginationParameters):
     tags: NotRequired[str]
 
 
+class ListUptimeTestHistoryParameters(PaginationParameters):
+    """Parameters expected by the StatusCake API uptime history endpoint"""
+
+    limit: NotRequired[int]
+
+
 class StatusCake:
     """
     A wrapper class for the StatusCake API client.
@@ -169,6 +175,13 @@ class StatusCake:
                 uptime_api.list_uptime_tests,
                 params,
             )
+
+            # Fetch the performance of each test and add it to the response
+            for test in response:
+                history = self.get_test_history(test["id"])
+                test["performance"] = history["data"][0]["performance"]
+
+            print(response)
             return response
 
         # https://github.com/StatusCakeDev/statuscake-py/issues/8
@@ -181,4 +194,29 @@ class StatusCake:
 
         except Exception as e:
             logger.error(f"Error while fetching tests: {e}")
+            raise e
+
+    def get_test_history(self, test_id: str) -> list[dict[str, Any]]:
+        """
+        Returns the history of a test
+
+        Args:
+            test_id: [str] The ID of the test
+
+        Returns:
+            list[dict[str, Any]]
+
+        Raises:
+            Exception: If an error occurs while fetching the test history
+        """
+        api_client = self.__get_api_client()
+
+        try:
+            uptime_api: UptimeApi = UptimeApi(api_client)
+            params = ListUptimeTestHistoryParameters(limit=1)
+            response = uptime_api.list_uptime_test_history(test_id, **params)
+            return response
+
+        except Exception as e:
+            logger.error(f"Error while fetching test history: {e}")
             raise e

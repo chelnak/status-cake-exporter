@@ -88,6 +88,7 @@ def transform(
                 "test_url": i["website_url"],
                 "test_status_int": get_uptime_status(i["status"]),
                 "test_uptime_percent": str(i["uptime"]),
+                "test_performance": str(i["performance"]),
                 "maintenance_status_int": get_test_maintenance_status(
                     i["id"], tests_in_maintenance
                 ),
@@ -166,6 +167,19 @@ class TestCollector(Collector):
                 uptime_gauge.add_metric([i["test_id"]], float(i["test_uptime_percent"]))
 
             yield uptime_gauge
+
+            # status_cake_test_performance - gauge
+            logger.info(f"Publishing {len(metrics)} performance metric(s).")
+            performance_gauge = GaugeMetricFamily(
+                "status_cake_test_performance",
+                "Tests and their performance",
+                labels=["test_id"],
+            )
+
+            for i in metrics:
+                performance_gauge.add_metric([i["test_id"]], (i["test_performance"]))
+
+            yield performance_gauge
 
         except Exception as e:
             import traceback
