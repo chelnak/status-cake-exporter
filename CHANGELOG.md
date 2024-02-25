@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.1.0](https://github.com/chelnak/status-cake-exporter/tree/v1.1.0) - 2024-02-25
+
+[Full Changelog](https://github.com/chelnak/status-cake-exporter/compare/v1.0.0...v1.1.0)
+
+### Added
+
+- Fix total_count error and support uptime performance [#26](https://github.com/chelnak/status-cake-exporter/pull/26) ([chelnak](https://github.com/chelnak))
+
 ## [v1.0.0](https://github.com/chelnak/status-cake-exporter/tree/v1.0.0) - 2022-12-02
 
 [Full Changelog](https://github.com/chelnak/status-cake-exporter/compare/v0.2.0...v1.0.0)
@@ -22,7 +30,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Added
 
-- Added optional use of new v1 StatusCake API [#10](https://github.com/chelnak/status-cake-exporter/pull/10) ([jack-cloud-platform](https://github.com/jack-cloud-platform))
+- Added optional use of new v1 StatusCake API [#10](https://github.com/chelnak/status-cake-exporter/pull/10) ([CloudPlatformer](https://github.com/CloudPlatformer))
 
 ## [v0.1.21](https://github.com/chelnak/status-cake-exporter/tree/v0.1.21) - 2021-09-01
 
@@ -46,7 +54,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Fixed
 
-- Removed individual test calls as the get all tests call includes UptimePercent for each test in response [#7](https://github.com/chelnak/status-cake-exporter/pull/7) ([jack-cloud-platform](https://github.com/jack-cloud-platform))
+- Removed individual test calls as the get all tests call includes UptimePercent for each test in response [#7](https://github.com/chelnak/status-cake-exporter/pull/7) ([CloudPlatformer](https://github.com/CloudPlatformer))
 - Data Fix for handling new response [#5](https://github.com/chelnak/status-cake-exporter/pull/5) ([nbowes24](https://github.com/nbowes24))
 
 ## [0.1.17](https://github.com/chelnak/status-cake-exporter/tree/0.1.17) - 2020-10-15
