@@ -5,7 +5,7 @@ from typing import Any
 
 from statuscake import ApiClient, Configuration
 from statuscake.apis import MaintenanceWindowsApi, UptimeApi
-from statuscake.exceptions import ApiValueError, ForbiddenException
+from statuscake.exceptions import ApiValueError, ForbiddenException, ApiException
 from typing_extensions import NotRequired, TypedDict
 
 logger = logging.getLogger("status_cake")
@@ -223,6 +223,14 @@ class StatusCake:
             response = uptime_api.list_uptime_test_history(test_id, **params)
             return response
 
+        except ApiException as e:
+            if e.status == 429:
+                backoff=int(e.headers["x-ratelimit-reset"])
+                logger.debug(f"Hit statuscake API rate limit. Waiting {backoff} seconds before retrying...")
+                sleep(backoff)
+                return uptime_api.list_uptime_test_history(test_id, **params)
+
+            raise e
         except Exception as e:
             logger.error(f"Error while fetching test history: {e}")
             raise e
