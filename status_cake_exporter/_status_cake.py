@@ -182,7 +182,10 @@ class StatusCake:
             # Fetch the performance of each test and add it to the response
             for test in response:
                 history = self.get_test_history(test["id"])
-                test["performance"] = history["data"][0]["performance"]
+                if history["data"]:
+                    test["performance"] = history["data"][0]["performance"]
+                else:
+                    logger.warning(f"No performance data found for test ID {test['id']}")
 
             print(response)
             return response
