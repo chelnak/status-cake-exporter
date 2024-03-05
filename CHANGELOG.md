@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v1.1.1](https://github.com/chelnak/status-cake-exporter/tree/v1.1.1) - 2024-03-05
+
+[Full Changelog](https://github.com/chelnak/status-cake-exporter/compare/v1.1.0...v1.1.1)
+
+### Fixed
+
+- Support rate limits and missing performance data [#29](https://github.com/chelnak/status-cake-exporter/pull/29) ([Jeff-SearchPilot](https://github.com/Jeff-SearchPilot))
+- Support tests with no performance data [#28](https://github.com/chelnak/status-cake-exporter/pull/28) ([Jeff-SearchPilot](https://github.com/Jeff-SearchPilot))
+
 ## [v1.1.0](https://github.com/chelnak/status-cake-exporter/tree/v1.1.0) - 2024-02-25
 
 [Full Changelog](https://github.com/chelnak/status-cake-exporter/compare/v1.0.0...v1.1.0)
