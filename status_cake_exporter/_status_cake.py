@@ -82,7 +82,7 @@ class StatusCake:
             list[dict[str, Any]]
         """
         params: DefaultPaginationParameters = {"page": 1, "limit": self.per_page}
-        args = args | params if args else params
+        params = args | params if args else params
 
         response = func(**params)
         metadata = response["metadata"]
