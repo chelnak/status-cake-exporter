@@ -166,12 +166,13 @@ class StatusCake:
             logger.error(f"Error while fetching maintenance windows: {e}")
             raise e
 
-    def list_tests(self, tags: str = "") -> list[dict]:
+    def list_tests(self, tags: str = "", enable_perf_metrics: bool = False) -> list[dict]:
         """
         Returns a list of tests
 
         Args:
             tags: [str] A comma separated list of tags to filter by.
+            enable_perf_metrics: [bool] Enable collection of performance data.
 
         Returns:
             list[dict[str, Any]]
@@ -191,12 +192,13 @@ class StatusCake:
             )
 
             # Fetch the performance of each test and add it to the response
-            for test in response:
-                history = self.get_test_history(test["id"])
-                if history["data"]:
-                    test["performance"] = history["data"][0]["performance"]
-                else:
-                    logger.warning(f"No performance data found for test ID {test['id']}")
+            if enable_perf_metrics:
+                for test in response:
+                    history = self.get_test_history(test["id"])
+                    if history["data"]:
+                        test["performance"] = history["data"][0]["performance"]
+                    else:
+                        logger.warning(f"No performance data found for test ID {test['id']}")
 
             logger.debug(response)
             return response

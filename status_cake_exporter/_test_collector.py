@@ -92,7 +92,6 @@ def transform(
                 ),
             }
         
-        print(f'test_status_int is {test["test_status_int"]} from {i["status"]}')
         if hasattr(i, 'performance'):
             test["test_performance"]= str(i["performance"])
         t.append(test)
@@ -105,7 +104,7 @@ def transform(
 class TestCollector(Collector):
     """The collector subclass responsible for gathering test metrics from the StatusCake API."""
 
-    def __init__(self, host: str, api_key: str, per_page: int, tags: str):
+    def __init__(self, host: str, api_key: str, per_page: int, tags: str, enable_perf_metrics: bool):
         """
         Args:
             host: [str] The host of the StatusCake API
@@ -117,6 +116,7 @@ class TestCollector(Collector):
         self.api_key: str = api_key
         self.per_page: int = per_page
         self.tags: str = tags
+        self.enable_perf_metrics: bool = enable_perf_metrics
 
     def collect(self):
         """
@@ -139,7 +139,7 @@ class TestCollector(Collector):
             )
 
             logger.debug("Fetching uptime tests")
-            tests = statuscake.list_tests(self.tags)
+            tests = statuscake.list_tests(self.tags, self.enable_perf_metrics)
 
             metrics = transform(tests, tests_in_maintenance)
             if len(metrics) == 0:
