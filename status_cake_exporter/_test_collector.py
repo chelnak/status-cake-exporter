@@ -151,6 +151,8 @@ class TestCollector(Collector):
                 "status_cake_test_info",
                 "A basic listing of the tests under the current account.",
                 labels=list(metrics[0].keys()),
+                # info metrics should always be 1
+                value=1.0
             )
 
             for i in metrics:
