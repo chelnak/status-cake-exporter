@@ -148,14 +148,14 @@ class TestCollector(Collector):
 
             # status_cake_test_info - gauge
             info_labels = ["test_id", "test_name", "test_type", "test_url"]
-            info_dict = { x:metrics[0][x] for x in info_labels}
             logger.info(f"Publishing {len(metrics)} test metric(s).")
             info_gauge = GaugeMetricFamily(
                 "status_cake_test_info",
                 "A basic listing of the tests under the current account.",
-                labels=list(info_dict.keys()),
+                labels=info_labels,
             )
             for i in metrics:
+                info_dict = { x:i[x] for x in info_labels}
                 # https://www.robustperception.io/why-info-style-metrics-have-a-value-of-1/
                 info_gauge.add_metric(list(info_dict.values()), 1.0)
 
