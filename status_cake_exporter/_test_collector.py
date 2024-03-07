@@ -85,13 +85,14 @@ def transform(
                 ),  # This is random but we get an ApiAttributeError if we don't do this.
                 "test_name": i["name"],
                 "test_url": i["website_url"],
-                "test_status_int": get_uptime_status(i["status"]),
+                "test_status_int": get_uptime_status(str(i["status"])),
                 "test_uptime_percent": str(i["uptime"]),
                 "maintenance_status_int": get_test_maintenance_status(
                     i["id"], tests_in_maintenance
                 ),
             }
         
+        print(f'test_status_int is {test["test_status_int"]} from {i["status"]}')
         if hasattr(i, 'performance'):
             test["test_performance"]= str(i["performance"])
         t.append(test)
@@ -146,19 +147,33 @@ class TestCollector(Collector):
                 return
 
             # status_cake_test_info - gauge
+            info_labels = ["test_id", "test_name", "test_type", "test_url"]
+            info_dict = { x:metrics[0][x] for x in info_labels}
             logger.info(f"Publishing {len(metrics)} test metric(s).")
             info_gauge = GaugeMetricFamily(
                 "status_cake_test_info",
                 "A basic listing of the tests under the current account.",
-                labels=list(metrics[0].keys()),
-                # info metrics should always be 1
-                value=1.0
+                labels=list(info_dict.keys()),
+            )
+            for i in metrics:
+                # https://www.robustperception.io/why-info-style-metrics-have-a-value-of-1/
+                info_gauge.add_metric(list(info_dict.values()), 1.0)
+
+            yield info_gauge
+
+            # status_cake_test_status - gauge
+            logger.info(f"Publishing {len(metrics)} status metric(s).")
+            status_gauge = GaugeMetricFamily(
+                "status_cake_test_status",
+                "Tests and their current status",
+                labels=["test_id"],
             )
 
             for i in metrics:
-                info_gauge.add_metric(list(i.values()), float(i["test_status_int"]))
+                print(i)
+                status_gauge.add_metric([i["test_id"]], float(i["test_status_int"]))
 
-            yield info_gauge
+            yield status_gauge
 
             # status_cake_test_uptime_percent - gauge
             logger.info(f"Publishing {len(metrics)} uptime metric(s).")

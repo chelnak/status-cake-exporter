@@ -76,6 +76,7 @@ Options:
 | Name| Type | Description |
 |-----|------|-------------|
 | status_cake_test_info | Gauge |A basic listing of the tests under the current account. |
+| status_cake_test_status | Gauge | Current test status (1 is up, 0 is down) |
 | status_cake_test_uptime_percent | Gauge | Tests and their uptime percentage |
 | status_cake_test_performance | Gauge | Tests and their performance percentage |
 
