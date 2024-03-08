@@ -84,7 +84,18 @@ class StatusCake:
         params: DefaultPaginationParameters = {"page": 1, "limit": self.per_page}
         params = args | params if args else params
 
-        response = func(**params)
+        def __retry_backoff(func, **kwargs):
+            try:
+                return func(**kwargs)
+            except ApiException as e:
+                if e.status == 429:
+                    backoff=int(e.headers["x-ratelimit-reset"])
+                    logger.debug(f"Hit statuscake API rate limit. Waiting {backoff} seconds before retrying...")
+                    sleep(backoff)
+                    return __retry_backoff(func, **kwargs)
+                raise e
+
+        response = __retry_backoff(func,**params)
         metadata = response["metadata"]
         logger.debug(
             f"Received {metadata['total_count']} tests across {metadata['page_count']} page(s)"
@@ -94,7 +105,7 @@ class StatusCake:
         while params["page"] < metadata["page_count"]:
             params["page"] += 1
             logger.debug(f"Fetching page {params['page']} of {metadata['page_count']}")
-            paged_response = func(**params)
+            paged_response = __retry_backoff(func,**params)
             data.extend(paged_response["data"])
 
             sleep(1)
@@ -155,12 +166,13 @@ class StatusCake:
             logger.error(f"Error while fetching maintenance windows: {e}")
             raise e
 
-    def list_tests(self, tags: str = "") -> list[dict]:
+    def list_tests(self, tags: str = "", enable_perf_metrics: bool = False) -> list[dict]:
         """
         Returns a list of tests
 
         Args:
             tags: [str] A comma separated list of tags to filter by.
+            enable_perf_metrics: [bool] Enable collection of performance data.
 
         Returns:
             list[dict[str, Any]]
@@ -180,14 +192,15 @@ class StatusCake:
             )
 
             # Fetch the performance of each test and add it to the response
-            for test in response:
-                history = self.get_test_history(test["id"])
-                if history["data"]:
-                    test["performance"] = history["data"][0]["performance"]
-                else:
-                    logger.warning(f"No performance data found for test ID {test['id']}")
+            if enable_perf_metrics:
+                for test in response:
+                    history = self.get_test_history(test["id"])
+                    if history["data"]:
+                        test["performance"] = history["data"][0]["performance"]
+                    else:
+                        logger.warning(f"No performance data found for test ID {test['id']}")
 
-            print(response)
+            logger.debug(response)
             return response
 
         # https://github.com/StatusCakeDev/statuscake-py/issues/8

@@ -85,7 +85,7 @@ def transform(
                 ),  # This is random but we get an ApiAttributeError if we don't do this.
                 "test_name": i["name"],
                 "test_url": i["website_url"],
-                "test_status_int": get_uptime_status(i["status"]),
+                "test_status_int": get_uptime_status(str(i["status"])),
                 "test_uptime_percent": str(i["uptime"]),
                 "maintenance_status_int": get_test_maintenance_status(
                     i["id"], tests_in_maintenance
@@ -104,7 +104,7 @@ def transform(
 class TestCollector(Collector):
     """The collector subclass responsible for gathering test metrics from the StatusCake API."""
 
-    def __init__(self, host: str, api_key: str, per_page: int, tags: str):
+    def __init__(self, host: str, api_key: str, per_page: int, tags: str, enable_perf_metrics: bool):
         """
         Args:
             host: [str] The host of the StatusCake API
@@ -116,6 +116,7 @@ class TestCollector(Collector):
         self.api_key: str = api_key
         self.per_page: int = per_page
         self.tags: str = tags
+        self.enable_perf_metrics: bool = enable_perf_metrics
 
     def collect(self):
         """
@@ -138,7 +139,7 @@ class TestCollector(Collector):
             )
 
             logger.debug("Fetching uptime tests")
-            tests = statuscake.list_tests(self.tags)
+            tests = statuscake.list_tests(self.tags, self.enable_perf_metrics)
 
             metrics = transform(tests, tests_in_maintenance)
             if len(metrics) == 0:
@@ -146,17 +147,33 @@ class TestCollector(Collector):
                 return
 
             # status_cake_test_info - gauge
+            info_labels = ["test_id", "test_name", "test_type", "test_url"]
             logger.info(f"Publishing {len(metrics)} test metric(s).")
             info_gauge = GaugeMetricFamily(
                 "status_cake_test_info",
                 "A basic listing of the tests under the current account.",
-                labels=list(metrics[0].keys()),
+                labels=info_labels,
+            )
+            for i in metrics:
+                info_dict = { x:i[x] for x in info_labels}
+                # https://www.robustperception.io/why-info-style-metrics-have-a-value-of-1/
+                info_gauge.add_metric(list(info_dict.values()), 1.0)
+
+            yield info_gauge
+
+            # status_cake_test_status - gauge
+            logger.info(f"Publishing {len(metrics)} status metric(s).")
+            status_gauge = GaugeMetricFamily(
+                "status_cake_test_status",
+                "Tests and their current status",
+                labels=["test_id"],
             )
 
             for i in metrics:
-                info_gauge.add_metric(list(i.values()), float(i["test_status_int"]))
+                print(i)
+                status_gauge.add_metric([i["test_id"]], float(i["test_status_int"]))
 
-            yield info_gauge
+            yield status_gauge
 
             # status_cake_test_uptime_percent - gauge
             logger.info(f"Publishing {len(metrics)} uptime metric(s).")

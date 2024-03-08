@@ -30,6 +30,7 @@ def exporter(
         envvar="LOG_LEVEL",
     ),
     port: int = typer.Option(8000, envvar="PORT"),
+    enable_perf_metrics: bool = typer.Option(False, help="Enable the collection of test performance times and expose as a metric. Warning - this can cause additional usage of the statuscake API and slow down collection", envvar="ENABLE_PERF_METRICS"),
     items_per_page=typer.Option(
         25,
         help="The number of items that the api will return on a page. This is a global option.",
@@ -54,7 +55,7 @@ def exporter(
         start_http_server(port)
 
         logger.info("Registering collectors.")
-        test_collector = TestCollector(host, api_key, items_per_page, tags)
+        test_collector = TestCollector(host, api_key, items_per_page, tags, enable_perf_metrics)
         REGISTRY.register(test_collector)
 
         while True:

@@ -55,20 +55,29 @@ To get up and running quickly, use [examples/grafana-example.json](examples/graf
 Usage: status-cake-exporter [OPTIONS]
 
 Options:
-  --host TEXT            The host of the statuscake api.  [env var: HOST;
-                         default: https://api.statuscake.com/v1]
-  --api-key TEXT         API Key for the account.  [env var: API_KEY;
-                         required]
-  --tags TEXT            A comma separated list of tags used to filter tests
-                         returned from the api  [env var: TAGS]
-  --log-level TEXT       The log level of the application. Value can be one of
-                         {debug, info, warn, error}  [env var: LOG_LEVEL;
-                         default: info]
-  --port INTEGER         [env var: PORT; default: 8000]
-  --items-per-page TEXT  The number of items that the api will return on a
-                         page. This is a global option.  [env var:
-                         ITEMS_PER_PAGE; default: 25]
-  --help                 Show this message and exit
+  --host TEXT                     The host of the StatusCake API.  [env var:
+                                  HOST; default:
+                                  https://api.statuscake.com/v1]
+  --api-key TEXT                  API Key for the account.  [env var: API_KEY;
+                                  required]
+  --tags TEXT                     A comma separated list of tags used to
+                                  filter tests returned from the api  [env
+                                  var: TAGS]
+  --log-level TEXT                The log level of the application. Value can
+                                  be one of {debug, info, warn, error}  [env
+                                  var: LOG_LEVEL; default: info]
+  --port INTEGER                  [env var: PORT; default: 8000]
+  --enable-perf-metrics / --no-enable-perf-metrics
+                                  Enable the collection of test performance
+                                  times and expose as a metric. Warning - this
+                                  can cause additional usage of the statuscake
+                                  API and slow down runtime  [env var:
+                                  ENABLE_PERF_METRICS; default: no-enable-
+                                  perf-metrics]
+  --items-per-page TEXT           The number of items that the api will return
+                                  on a page. This is a global option.  [env
+                                  var: ITEMS_PER_PAGE; default: 25]
+  --help                          Show this message and exit.
 ```
 
 ## Metrics
@@ -76,6 +85,7 @@ Options:
 | Name| Type | Description |
 |-----|------|-------------|
 | status_cake_test_info | Gauge |A basic listing of the tests under the current account. |
+| status_cake_test_status | Gauge | Current test status (1 is up, 0 is down) |
 | status_cake_test_uptime_percent | Gauge | Tests and their uptime percentage |
 | status_cake_test_performance | Gauge | Tests and their performance percentage |
 
