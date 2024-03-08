@@ -70,6 +70,7 @@ jobs:
         docker push -a $IMAGE_ID
 
     - name: "Generate release notes"
+      if: startsWith(github.ref, 'refs/tags/v')
       run: |
         export GH_HOST=github.com
         gh extension install chelnak/gh-changelog
