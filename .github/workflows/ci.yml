@@ -4,7 +4,9 @@ on:
   push:
     tags:
       - v*
-  pull_request:
+    branches:
+      - main
+  pull_request_target:
     branches:
       - main
   workflow_dispatch:
@@ -15,9 +17,7 @@ env:
 jobs:
   ci:
     runs-on: "ubuntu-latest"
-
     steps:
-
     - uses: "actions/checkout@v3"
       with:
         fetch-depth: 0
@@ -46,9 +46,11 @@ jobs:
         docker build . --file Dockerfile --tag status-cake-exporter
 
     - name: "log into registry"
+      if: github.repository_owner == 'chelnak'
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
     - name: "push image"
+      if: github.repository_owner == 'chelnak'
       run: |
         IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
         IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
@@ -67,18 +69,17 @@ jobs:
         docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
         docker push -a $IMAGE_ID
 
-    - name: "create release"
-      if: startsWith(github.ref, 'refs/tags/v')
+    - name: "Generate release notes"
       run: |
-        gh release create v${{ steps.get_version.outputs.version }} --title v${{ steps.get_version.outputs.version }}
+        export GH_HOST=github.com
+        gh extension install chelnak/gh-changelog
+        gh changelog get --latest > LATEST.md
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: "publish"
+    - name: "create release"
       if: startsWith(github.ref, 'refs/tags/v')
       run: |
-        poetry config pypi-token.pypi $POETRY_PYPI_TOKEN_PYPI
-        poetry publish
+        gh release create v${{ steps.get_version.outputs.version }} --title v${{ steps.get_version.outputs.version }} -F LATEST.md
       env:
-        POETRY_PYPI_TOKEN_PYPI: ${{ secrets.PYPI_API_TOKEN }}
-
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
