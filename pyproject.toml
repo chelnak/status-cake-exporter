@@ -27,7 +27,7 @@ typing-extensions = "^4.9.0"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.0.0"
-black = "^24.2.0"
+black = ">=24.2,<26.0"
 pre-commit = ">=3.6.2,<5.0.0"
 pyright = "^1.1.351"
 isort = "^5.13.2"
