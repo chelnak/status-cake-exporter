@@ -9,6 +9,9 @@ statuscake:
   # useV1UptimeEndpoints:
   # optional: a boolean format string for using the maintenance windows endpoints of the v1 API
   # useV1MaintenanceWindowsEndpoints:
+  # Supply an existing secret with the username and apiKey
+  # Secret must contain API_KEY and USERNAME
+  existingSecret: ~
   # REQUIRED: username to use when connecting to statuscake
   username: ""
   # REQUIRED: apikey to use when connecting to statuscake

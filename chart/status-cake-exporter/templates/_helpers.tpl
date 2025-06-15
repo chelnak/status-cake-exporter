@@ -25,3 +25,7 @@ Return the appropriate apiVersion for deployment.
 {{- print "apps/v1" -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "secretName" -}}
+{{ .Values.statuscake.existingSecret | default (printf "%s-api-token" .Release.Name) }}
+{{- end -}}
