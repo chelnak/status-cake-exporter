@@ -35,12 +35,12 @@ spec:
         - name: USERNAME
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-api-token
+              name: {{ include "secretName" . }}
               key: USERNAME
         - name: API_KEY
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-api-token
+              name: {{ include "secretName" . }}
               key: API_KEY
 {{- if .Values.statuscake.tags }}
         - name: TAGS
